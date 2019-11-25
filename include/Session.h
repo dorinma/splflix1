@@ -17,9 +17,12 @@ public:
     void clean();
     std::string getSessionInput();
     std::unordered_map<std::string, User*> getUserMap();
+    std::vector<Watchable*> getContent();
     User* getUserByString(std::string name);
     void addUserToMap(User *u);
     void addActionToLog(BaseAction* ba);
+    void setActiveUser(User* user);
+    void deleteUserFromMap(std::string name);
 
 private:
     std::vector<Watchable*> content;
