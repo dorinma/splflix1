@@ -20,6 +20,7 @@ public:
     User* getUserByString(std::string name);
     void addUserToMap(User *u);
     void addActionToLog(BaseAction* ba);
+    std::vector<Watchable*> getContent();
 
 private:
     std::vector<Watchable*> content;

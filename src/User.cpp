@@ -9,9 +9,12 @@
 //copy assignment operator
 //move assignment operator
 
+//TODO
+//complete the constructors
+//rule of five??
 
 //User
-User::User(const std::string &name) {}
+User::User(const std::string &name) : name(name) {}
 
 std::vector<Watchable*> User::get_history() const {}
 

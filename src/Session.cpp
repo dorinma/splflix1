@@ -90,16 +90,17 @@ void Session::addUserToMap(User *u) {userMap.insert({u->getName(), u});}
 
 void Session::addActionToLog(BaseAction *ba) {actionsLog.push_back(ba);}
 
-//dorin ha malka
-
+std::vector<Watchable*> Session::getContent() { return content; }
 
 void Session :: start() {
 
     cout << "SPLFLIX is now on!" << endl;
     bool terminate = false;
 
+    //cout << "Please insert input." << endl;
+
     while (terminate != true){
-        cout << "Please insert input." << endl;
+
         std::string input;
         getline (cin >> ws, input);
         sessionInput = input;
@@ -109,41 +110,41 @@ void Session :: start() {
 
         BaseAction *baseAction;
 
-            if (result[0].compare("createuser") == 0) {
+            if (result[0] == "createuser") {
                 baseAction = new CreateUser();
             }
 
-            if (result[0].compare("changeuser") == 0) {
+            if (result[0] =="changeuser") {
                 baseAction = new ChangeActiveUser();
             }
 
-            if (result[0].compare("deleteuser") == 0) {
+            if (result[0] =="deleteuser") {
                 baseAction = new DeleteUser();
             }
 
-            if (result[0].compare("dupuser") == 0) {
+            if (result[0] == "dupuser") {
                 baseAction = new DuplicateUser();
             }
 
-            if (result[0].compare("content") == 0) {
+            if (result[0] == "content") {
                 baseAction = new PrintContentList();
             }
 
-            if (result[0].compare("watchhist") == 0) {
+            if (result[0] == "watchhist") {
                 baseAction = new PrintContentList();
             }
 
-            if (result[0].compare("watch") == 0) {
+            if (result[0] == "watch") {
                 baseAction = new Watch();
             }
 
-            if (result[0].compare("log") == 0) {
+            if (result[0] == "log") {
                 baseAction = new PrintActionsLog();
             }
 
-            if (result[0].compare("exit") == 0) {
+            if (result[0] == "exit") {
                 baseAction = new Exit();
-                //terminate = true;
+                terminate = true;
             }
 
             baseAction->act(*this);
