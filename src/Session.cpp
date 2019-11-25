@@ -90,6 +90,7 @@ void Session::addUserToMap(User *u) {userMap.insert({u->getName(), u});}
 
 void Session::addActionToLog(BaseAction *ba) {actionsLog.push_back(ba);}
 
+//dorin ha malka
 
 
 void Session :: start() {
