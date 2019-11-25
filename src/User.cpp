@@ -10,7 +10,6 @@
 //move assignment operator
 
 //TODO
-//complete the constructors
 //rule of five??
 
 //User
