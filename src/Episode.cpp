@@ -2,6 +2,7 @@
 // Created by dorin on 24/11/2019.
 //
 
+#include <sstream>
 #include "../include/Watchable.h"
 
 
@@ -44,6 +45,15 @@ int Episode:: getEpisode() { return episode; }
 
 long Episode :: getNextEpisodeId() { return nextEpisodeId; }
 
-std::string Episode::toString() const {}
+std::string Episode::toString() const {
+    int s = this->season;
+    std::stringstream se;
+    se << s;
+    int e = this->episode;
+    std::stringstream ee;
+    ee << e;
+        std::string name = this->seriesName + " S" + se.str() + "E" + ee.str();
+        return name;
+}
 
 Watchable* Episode::getNextWatchable(Session &) const {}
