@@ -2,6 +2,8 @@
 // Created by dorin on 20/11/2019.
 //
 #include "../include/User.h"
+#include "../include/Session.h"
+#include "../include/Watchable.h"
 #include <cmath>
 #include <random>
 #include <vector>
@@ -40,9 +42,9 @@ else {
         //get average length
         int count, lenSum = 0;
         for (const auto &elem : history) {
-            Watchable* temp = elem;
+            Watchable *temp = elem;
             count++;
-            lenSum += temp.getLength();
+            lenSum += temp->getLength();
         }
         int avgLen = (int) lenSum / count;
 
@@ -50,12 +52,12 @@ else {
         int difLen = INTMAX_MAX; //set the min dif length to the max value
 
         for (const auto &elem1 : s.getContent()) {
-            Watchable* temp = elem1;
-            int currentLen = temp.getLength();
+            Watchable *temp = elem1;
+            int currentLen = temp->getLength();
             if ((std::abs(avgLen - currentLen)) <= difLen) {
                 //check if this content isn't in the user's history
                 for (const auto &elem2 : history) {
-                    Watchable* secTemp = elem2;
+                    Watchable *secTemp = elem2;
                     if (temp != secTemp) {
                         difLen = std::abs(avgLen - currentLen);
                         recommendations.push_back(temp);
@@ -63,14 +65,14 @@ else {
                 }
             }
         }
-        Whatchable* output = nullptr;
+        Watchable *output = nullptr;
         if (recommendations.size() == 0) return output; //no recommendations
         else if (recommendations.size() == 1) return recommendations.at(0); //one recommendation
         else { //several recommendations
             //get the content with the minimal index
             int i = s.getContent().size(); //set the min index to the max value
             for (const auto &elem : recommendations) {
-                Watchable* temp = elem;
+                Watchable *temp = elem;
                 if (temp->getId() < i) {
                     i = temp->getId();
                     output = temp;
@@ -95,7 +97,7 @@ Watchable* RerunRecommenderUser::getRecommendation(Session &s) {
     else {
         Watchable* output = nullptr;
         int n = history.size();
-        int lastIndex = history.at(history.size() - 1);
+        int lastIndex = history.size() - 1;
         int nextIndex = (lastIndex + 1) % n;
 
         if(nextIndex >= 0 & nextIndex < n)
@@ -117,7 +119,7 @@ Watchable* GenreRecommenderUser::getRecommendation(Session &s) {
 
     else {
         //1. find all the genres the user watched
-        std::vector<string> watchedGenres;
+        std::vector<std::string> watchedGenres;
         for (const auto &elem : history) {
             Watchable* temp = elem;
             watchedGenres.insert(watchedGenres.end(), temp->getTags().begin(), temp->getTags().end());
@@ -131,7 +133,7 @@ Watchable* GenreRecommenderUser::getRecommendation(Session &s) {
             bool found = false;
             for (auto currGen : genresCounter) {
                 while (!found) {
-                    if (watched == curr.first) {
+                    if (watched == currGen.first) {
                         currGen.second++;
                         found = true;
                     }
@@ -160,9 +162,9 @@ Watchable* GenreRecommenderUser::getRecommendation(Session &s) {
                 std::string currGen = elem1;
                 for (const auto &elem2 : s.getContent()) {
                     Watchable* currContent = elem2;
-                    if (!std::find(history.begin(), history.end(), currContent) != history.end()) {
+                    if (std::find(history.begin(), history.end(), currContent) == history.end()) {
                         for (const auto &elem3 : currContent->getTags()) {
-                            std::strind currTag = elem3;
+                            std::string currTag = elem3;
                             if (currGen == currTag)
                                 return currContent;
                         }
