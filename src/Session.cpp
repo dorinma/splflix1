@@ -52,10 +52,10 @@ Session :: Session(const std::string &configFilePath){
         for (int s = 1; s <= seasons; ++s) {
             for (int e = 1; e <= j["tv_series"][k]["seasons"][s]; ++e) {
                 content.push_back(new Episode(i + 1, j["tv_series"][k]["name"],j["tv_series"][k]["episode_length"],s, e, tags));
+                i++;
             }
         }
         k++;
-        i++;
 
         //create default user
         LengthRecommenderUser *defUser = new LengthRecommenderUser("default");
@@ -86,11 +86,19 @@ User* Session::getUserByString(std::string name) {
     return user;
 }
 
+User* Session::getActiveUser() { return this->activeUser;}
+
 void Session::addUserToMap(User *u) {userMap.insert({u->getName(), u});}
 
 void Session::addActionToLog(BaseAction *ba) {actionsLog.push_back(ba);}
 
+void Session::setActiveUser(User *user) {this->activeUser = user;}
+
+void Session::deleteUserFromMap(std::string name) {this->userMap.erase(name);}
+
 std::vector<Watchable*> Session::getContent() { return content; }
+
+std::vector<BaseAction*> Session::getActionLog() { return this->actionsLog;}
 
 void Session :: start() {
 
@@ -131,7 +139,7 @@ void Session :: start() {
             }
 
             if (result[0] == "watchhist") {
-                baseAction = new PrintContentList();
+                baseAction = new PrintWatchHistory();
             }
 
             if (result[0] == "watch") {
