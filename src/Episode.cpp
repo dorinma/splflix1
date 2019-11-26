@@ -67,5 +67,8 @@ Watchable* Episode::getNextWatchable(Session &s) const {
         }
     }
     return nextEp;
+}
 
+void Episode::setNextEpisodeId(long next) {
+    nextEpisodeId = next;
 }
