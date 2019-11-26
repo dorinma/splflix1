@@ -51,7 +51,13 @@ Session :: Session(const std::string &configFilePath){
         }
         for (int s = 1; s <= seasons; ++s) {
             for (int e = 1; e <= j["tv_series"][k]["seasons"][s]; ++e) {
-                content.push_back(new Episode(i + 1, j["tv_series"][k]["name"],j["tv_series"][k]["episode_length"],s, e, tags));
+                Episode *episode = new Episode(i + 1, j["tv_series"][k]["name"],j["tv_series"][k]["episode_length"],s, e, tags);
+                //if(j["tv_series"][k]["seasons"][s]["name"] == j["tv_series"][k]["seasons"][s + 1]["name"])
+                if(s == seasons & e == j["tv_series"][k]["seasons"][s]) //if we're at the last episode
+                    episode->setNextEpisodeId(0);
+                else
+                    episode->setNextEpisodeId(i + 2);
+                content.push_back(episode);
                 i++;
             }
         }

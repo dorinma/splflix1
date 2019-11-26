@@ -57,6 +57,7 @@ public:
     int getSeason();
     int getEpisode();
     long getNextEpisodeId();
+    void setNextEpisodeId(long currEpisodeId);
 private:
     std::string seriesName;
     int season;
