@@ -31,7 +31,7 @@ Watchable :: ~Watchable(){
 }
 
 //getters
-long Watchable :: getId() { return id; }
+long Watchable :: getId() { return this->id; }
 int Watchable :: getLength() { return length; }
 std::vector<std::string> Watchable :: getTags() { return tags; }
 
@@ -41,7 +41,6 @@ void Watchable :: clean() {
     tags.clear();
     //id??
 }
-
 void Watchable :: copy(const Watchable& other){
     this -> length = other.length;
     for (int i=0; i<other.tags.size(); i++)

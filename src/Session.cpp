@@ -27,8 +27,8 @@ Session :: Session(const std::string &configFilePath){
         vector<string> tags;
         int tagsCount = 0;
         while(j["movies"][i]["tags"][tagsCount] != nullptr){
-            tags.push_back(j["movies"][i]["tags"][tagsCount]);
-            tagsCount++;
+           tags.push_back(j["movies"][i]["tags"][tagsCount]);
+           tagsCount++;
 
         }
         content.push_back(new Movie(i + 1,j["movies"][i]["name"],j["movies"][i]["length"], tags));
@@ -52,10 +52,10 @@ Session :: Session(const std::string &configFilePath){
         for (int s = 1; s <= seasons; ++s) {
             for (int e = 1; e <= j["tv_series"][k]["seasons"][s]; ++e) {
                 content.push_back(new Episode(i + 1, j["tv_series"][k]["name"],j["tv_series"][k]["episode_length"],s, e, tags));
+                i++;
             }
         }
         k++;
-        i++;
 
         //create default user
         LengthRecommenderUser *defUser = new LengthRecommenderUser("default");
@@ -86,6 +86,8 @@ User* Session::getUserByString(std::string name) {
     return user;
 }
 
+User* Session::getActiveUser() { return this->activeUser;}
+
 void Session::addUserToMap(User *u) {userMap.insert({u->getName(), u});}
 
 void Session::addActionToLog(BaseAction *ba) {actionsLog.push_back(ba);}
@@ -94,8 +96,11 @@ void Session::setActiveUser(User *user) {this->activeUser = user;}
 
 void Session::deleteUserFromMap(std::string name) {this->userMap.erase(name);}
 
-void Session :: start() {
+std::vector<Watchable*> Session::getContent() { return content; }
 
+std::vector<BaseAction*> Session::getActionLog() { return this->actionsLog;}
+
+void Session :: start() {
 
     cout << "SPLFLIX is now on!" << endl;
     bool terminate = false;
@@ -113,43 +118,44 @@ void Session :: start() {
 
         BaseAction *baseAction;
 
-        if (result[0] == "createuser") {
-            baseAction = new CreateUser();
-        }
+            if (result[0] == "createuser") {
+                baseAction = new CreateUser();
+            }
 
-        if (result[0] =="changeuser") {
-            baseAction = new ChangeActiveUser();
-        }
+            if (result[0] =="changeuser") {
+                baseAction = new ChangeActiveUser();
+            }
 
-        if (result[0] =="deleteuser") {
-            baseAction = new DeleteUser();
-        }
+            if (result[0] =="deleteuser") {
+                baseAction = new DeleteUser();
+            }
 
-        if (result[0] == "dupuser") {
-            baseAction = new DuplicateUser();
-        }
+            if (result[0] == "dupuser") {
+                baseAction = new DuplicateUser();
+            }
 
-        if (result[0] == "content") {
-            baseAction = new PrintContentList();
-        }
+            if (result[0] == "content") {
+                baseAction = new PrintContentList();
+            }
 
-        if (result[0] == "watchhist") {
-            baseAction = new PrintContentList();
-        }
+            if (result[0] == "watchhist") {
+                baseAction = new PrintWatchHistory();
+            }
 
-        if (result[0] == "watch") {
-            baseAction = new Watch();
-        }
+            if (result[0] == "watch") {
+                baseAction = new Watch();
+            }
 
-        if (result[0] == "log") {
-            baseAction = new PrintActionsLog();
-        }
+            if (result[0] == "log") {
+                baseAction = new PrintActionsLog();
+            }
 
-        if (result[0] == "exit") {
-            baseAction = new Exit();
-            terminate = true;
-        }
+            if (result[0] == "exit") {
+                baseAction = new Exit();
+                terminate = true;
+            }
 
-        baseAction->act(*this);
+            baseAction->act(*this);
+        }
     }
-}
+

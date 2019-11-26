@@ -51,8 +51,8 @@ public:
     virtual ~Episode(); //destructor
     virtual void clean();
     virtual void copy(const Episode& other);
-    virtual std::string toString() const;
-    virtual Watchable* getNextWatchable(Session&) const;
+    virtual std::string toString() const ;
+    virtual Watchable* getNextWatchable(Session&) const ;
     std::string getSeriesName();
     int getSeason();
     int getEpisode();
