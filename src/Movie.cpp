@@ -34,6 +34,8 @@ void Movie ::clean() {}
 
 void Movie :: copy(const Movie& other){}
 
-std::string Movie::toString() const {}
+std::string Movie::toString() const { return name; }
 
-Watchable* Movie::getNextWatchable(Session &) const {}
+Watchable* Movie::getNextWatchable(Session &) const {
+    return nullptr;
+}

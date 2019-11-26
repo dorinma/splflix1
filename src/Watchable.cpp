@@ -49,3 +49,5 @@ void Watchable :: copy(const Watchable& other){
         tags.push_back(other.tags[i]);
     }
 }
+
+Watchable* Watchable::getNextWatchable(Session &) const {}
