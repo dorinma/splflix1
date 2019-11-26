@@ -4,6 +4,7 @@
 #include "../include/json.hpp"
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 using json = nlohmann :: json;
@@ -105,6 +106,20 @@ void Session::deleteUserFromMap(std::string name) {this->userMap.erase(name);}
 std::vector<Watchable*> Session::getContent() { return content; }
 
 std::vector<BaseAction*> Session::getActionLog() { return this->actionsLog;}
+
+Watchable* Session::getSomethingToWatch(std::string id) {
+    Watchable* toWatch = nullptr;
+    int idInt =0;
+    string idString = id;
+    stringstream s(idString);
+    s >> idInt;
+
+    for(const auto& elem : content)
+    {
+            if(elem->getId() == idInt)
+            toWatch = elem;
+    }
+    return toWatch;}
 
 void Session :: start() {
 

@@ -64,7 +64,7 @@ void ChangeActiveUser::act(Session& sess) {
     std::string changedUser = userInput.substr(userInput.find(" "));
     User *user;
     user = sess.getUserByString(changedUser);
-    if (user == nullptr) {
+    if (sess.getUserByString(changedUser) == nullptr) {
          this->error("user to change does not exist");
     }
     else {
@@ -205,7 +205,29 @@ std::string PrintActionsLog::toString() const {}
 
 //Watch
 Watch::Watch() {}
-void Watch::act(Session& sess) {}
+void Watch::act(Session& sess) {
+    std::string userInput = sess.getSessionInput();
+    std::string idToWatch = userInput.substr(userInput.find(" ")+1);
+    bool toContinueWatching = true;
+    while (toContinueWatching)
+    {
+        if (sess.getSomethingToWatch(idToWatch) == nullptr) {
+            this->error("content with this id doesnt exist");
+        } else {
+            cout << "Watching " << sess.getSomethingToWatch(idToWatch)->toString() << endl;
+            complete();
+            //sess.addToHistory();
+            sess.addActionToLog(this);
+            //Watchable* nextWatchable = sess.getActiveUser()->getRecommendation(sess);
+            cout << "We recommend watching " << "continue watching? [y/n]" <<endl;
+            string input;
+            getline (cin >> ws, input);
+            if(input == "n")
+                toContinueWatching = false;
+        }
+    }
+   // this->toString();
+}
 std::string Watch::toString() const {}
 
 

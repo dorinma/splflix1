@@ -20,6 +20,7 @@ public:
     User* getUserByString(std::string name);
     User* getActiveUser();
     void addUserToMap(User *u);
+    Watchable* getSomethingToWatch(std::string id);
     void addActionToLog(BaseAction* ba);
     void setActiveUser(User* user);
     void deleteUserFromMap(std::string name);
