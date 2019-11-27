@@ -206,26 +206,40 @@ std::string PrintActionsLog::toString() const {}
 //Watch
 Watch::Watch() {}
 void Watch::act(Session& sess) {
+
     std::string userInput = sess.getSessionInput();
     std::string idToWatch = userInput.substr(userInput.find(" ")+1);
-    bool toContinueWatching = true;
-    while (toContinueWatching)
-    {
+
         if (sess.getSomethingToWatch(idToWatch) == nullptr) {
             this->error("content with this id doesnt exist");
         } else {
             cout << "Watching " << sess.getSomethingToWatch(idToWatch)->toString() << endl;
             complete();
-            //sess.addToHistory();
+            sess.addToHIstory(sess.getSomethingToWatch(idToWatch));
             sess.addActionToLog(this);
-            //Watchable* nextWatchable = sess.getActiveUser()->getRecommendation(sess);
-            cout << "We recommend watching " << "continue watching? [y/n]" <<endl;
+
+            bool toContinueWatching = true;
+            Watchable* nextWatchable = sess.getActiveUser()->getRecommendation(sess);
+            cout << "We recommend watching " << nextWatchable->toString() << "continue watching? [y/n]" <<endl;
             string input;
             getline (cin >> ws, input);
             if(input == "n")
                 toContinueWatching = false;
+            while (toContinueWatching)
+            {
+                cout << "Watching " << nextWatchable->toString() << endl;
+                complete();
+                sess.addToHIstory(nextWatchable);
+                sess.addActionToLog(this);
+
+                Watchable* nextWatchable = sess.getActiveUser()->getRecommendation(sess);
+                cout << "We recommend watching " << nextWatchable->toString() << "continue watching? [y/n]" <<endl;
+                string input;
+                getline (cin >> ws, input);
+                if(input == "n")
+                    toContinueWatching = false;
+            }
         }
-    }
    // this->toString();
 }
 std::string Watch::toString() const {}

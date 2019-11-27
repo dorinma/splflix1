@@ -99,6 +99,10 @@ void Session::addUserToMap(User *u) {userMap.insert({u->getName(), u});}
 
 void Session::addActionToLog(BaseAction *ba) {actionsLog.push_back(ba);}
 
+void Session::addToHIstory(Watchable *watched) {
+    activeUser->setToHistory(watched);
+}
+
 void Session::setActiveUser(User *user) {this->activeUser = user;}
 
 void Session::deleteUserFromMap(std::string name) {this->userMap.erase(name);}
