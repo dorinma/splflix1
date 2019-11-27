@@ -22,7 +22,7 @@ public:
     User* getActiveUser();
     void addUserToMap(User *u);
     Watchable* getSomethingToWatch(std::string id);
-    void addToHIstory(Watchable *watched);
+    void addToHistory(Watchable *watched);
     void addActionToLog(BaseAction* ba);
     void setActiveUser(User* user);
     void deleteUserFromMap(std::string name);

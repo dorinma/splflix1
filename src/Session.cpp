@@ -99,7 +99,7 @@ void Session::addUserToMap(User *u) {userMap.insert({u->getName(), u});}
 
 void Session::addActionToLog(BaseAction *ba) {actionsLog.push_back(ba);}
 
-void Session::addToHIstory(Watchable *watched) {
+void Session::addToHistory(Watchable *watched) {
     activeUser->setToHistory(watched);
 }
 
@@ -131,11 +131,9 @@ Watchable* Session::getSomethingToWatch(std::string id) {
 void Session :: start() {
 
     cout << "SPLFLIX is now on!" << endl;
-    bool terminate = false;
 
-    //cout << "Please insert input." << endl;
 
-    while (terminate != true){
+    while (this->terminate != true){
 
         std::string input;
         getline (cin >> ws, input);
@@ -180,7 +178,6 @@ void Session :: start() {
 
         if (result[0] == "exit") {
             baseAction = new Exit();
-            terminate = true;
         }
 
         baseAction->act(*this);

@@ -117,24 +117,32 @@ std::string DeleteUser::toString() const {
 DuplicateUser::DuplicateUser() {}
 void DuplicateUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
-    std::string oldUserName = userInput.substr(userInput.find(" "), userInput.find(" ")-1);
-    std::string newUserName = userInput.substr(userInput.find(" "));
-    User *oldUser;
+    std::string oldUserName = userInput.substr(userInput.find(" ")+1, userInput.find(" ")-2);
+    int tmp = oldUserName.size() + 2;
+    std::string newUserName = userInput.substr(userInput.find(" ") + tmp);
     User *newUser;
-    oldUser = sess.getUserByString(oldUserName);
-    if (oldUser == nullptr)
-    {this->error("user to duplicate from does not exist");}
-    newUser = sess.getUserByString(oldUserName);
-    if (oldUser != nullptr)
-    {this->error("this user name exist already");}
-    else {
-        newUser = oldUser;
+    if (sess.getUserByString(oldUserName) == nullptr){
+    this->error("user to duplicate from does not exist");}
+    else if(sess.getUserByString(newUserName) != nullptr){
+        this->error(("this user new exist already, choose new one"));}
+    else
+    {
+        newUser = sess.getUserByString(oldUserName);
+        newUser->setUserName(newUserName);
+        sess.addUserToMap(newUser);
         complete();
         sess.addActionToLog(this);
     }
     this->toString();
 }
-std::string DuplicateUser::toString() const {}
+std::string DuplicateUser::toString() const {
+    if (this->getStatus() == ERROR)
+        cout<< this->getErrorMsg()<< endl;
+    else if (this->getStatus() == COMPLETED)
+        cout<< "user coppied" << endl;
+    else
+        cout<< "unkown error" << endl;
+}
 
 
 //Print content list //DONEEEE
@@ -217,7 +225,7 @@ void Watch::act(Session& sess) {
             sess.nowPlaying = idToWatch;
             cout << "Watching " << sess.getSomethingToWatch(idToWatch)->toString() << endl;
             complete();
-            sess.addToHIstory(sess.getSomethingToWatch(idToWatch));
+            sess.addToHistory(sess.getSomethingToWatch(idToWatch));
             sess.addActionToLog(this);
 
             bool toContinueWatching = true;
@@ -237,15 +245,17 @@ void Watch::act(Session& sess) {
                 sess.nowPlaying = ss.str();
 
                 complete();
-                sess.addToHIstory(nextWatchable);
+                sess.addToHistory(nextWatchable);
                 sess.addActionToLog(this);
 
                 nextWatchable = sess.getActiveUser()->getRecommendation(sess);
                 cout << "We recommend watching " << nextWatchable->toString() << "continue watching? [y/n]" <<endl;
                 string input;
                 getline (cin >> ws, input);
-                if(input == "n")
+                if(input != "y") {
                     toContinueWatching = false;
+                    cout << "bing stopped. go work on your splflix" << endl;
+                }
             }
         }
    // this->toString();
@@ -253,7 +263,7 @@ void Watch::act(Session& sess) {
 std::string Watch::toString() const {}
 
 
-//Exit
+//Exit //DONEEEE
 Exit::Exit() {}
 void Exit::act(Session& sess) {
     sess.setTerminate("false");
