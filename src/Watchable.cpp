@@ -5,10 +5,12 @@
 
 #include "../include/Watchable.h"
 
+#include <utility>
+
 using namespace std;
 
 //const
-Watchable :: Watchable(long id, int length, const std::vector<std::string>& tags) : id(id), length(length), tags(tags) {}
+Watchable :: Watchable(long id, int length, std::vector<std::string>  tags) : id(id), length(length), tags(std::move(tags)) {}
 
 //copy constructor
 Watchable :: Watchable(const Watchable& other) : id(other.id) {
@@ -43,9 +45,8 @@ void Watchable :: clean() {
 }
 void Watchable :: copy(const Watchable& other){
     this -> length = other.length;
-    for (int i=0; i<other.tags.size(); i++)
-    {
-        tags.push_back(other.tags[i]);
+    for (const auto & tag : other.tags) {
+        tags.push_back(tag);
     }
 }
 

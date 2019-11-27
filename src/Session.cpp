@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <utility>
 
 using namespace std;
 using json = nlohmann :: json;
@@ -116,7 +117,7 @@ std::vector<BaseAction*> Session::getActionLog() { return this->actionsLog;}
 Watchable* Session::getSomethingToWatch(std::string id) {
     Watchable* toWatch = nullptr;
     int idInt =0;
-    string idString = id;
+    string idString = std::move(id);
     stringstream s(idString);
     s >> idInt;
 
@@ -133,7 +134,7 @@ void Session :: start() {
     cout << "SPLFLIX is now on!" << endl;
 
 
-    while (this->terminate != true){
+    while (!this->terminate){
 
         std::string input;
         getline (cin >> ws, input);
@@ -148,36 +149,40 @@ void Session :: start() {
             baseAction = new CreateUser();
         }
 
-        if (result[0] =="changeuser") {
+        else if (result[0] =="changeuser") {
             baseAction = new ChangeActiveUser();
         }
 
-        if (result[0] =="deleteuser") {
+        else if (result[0] =="deleteuser") {
             baseAction = new DeleteUser();
         }
 
-        if (result[0] == "dupuser") {
+        else if (result[0] == "dupuser") {
             baseAction = new DuplicateUser();
         }
 
-        if (result[0] == "content") {
+        else if (result[0] == "content") {
             baseAction = new PrintContentList();
         }
 
-        if (result[0] == "watchhist") {
+        else if (result[0] == "watchhist") {
             baseAction = new PrintWatchHistory();
         }
 
-        if (result[0] == "watch") {
+        else if (result[0] == "watch") {
             baseAction = new Watch();
         }
 
-        if (result[0] == "log") {
+        else if (result[0] == "log") {
             baseAction = new PrintActionsLog();
         }
 
-        if (result[0] == "exit") {
+        else if (result[0] == "exit") {
             baseAction = new Exit();
+        }
+
+        else {
+            cout << "wrong request" << endl;
         }
 
         baseAction->act(*this);

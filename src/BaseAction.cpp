@@ -179,7 +179,7 @@ std::string PrintContentList::toString() const {
 }
 
 
-//Print watch history //DONEEEEE
+//Print watch history
 PrintWatchHistory::PrintWatchHistory() = default;
 void PrintWatchHistory::act(Session& sess) {
     string name = sess.getActiveUser()->getName();

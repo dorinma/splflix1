@@ -9,7 +9,7 @@ class Session;
 
 class Watchable{
 public:
-    Watchable(long id, int length, const std::vector<std::string>& tags); //regular const
+    Watchable(long id, int length, std::vector<std::string>  tags); //regular const
     Watchable(const Watchable& other);  //copy constructor
     Watchable& operator=(const Watchable& rhs); // copy assignment operator
     virtual ~Watchable(); //destructor
@@ -24,7 +24,7 @@ public:
 private:
     const long id;
     int length;
-    std::vector<std::string> tags;
+    std::vector<std::st{}ring> tags;
 };
 
 class Movie : public Watchable{
