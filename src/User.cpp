@@ -6,6 +6,7 @@
 #include "../include/Watchable.h"
 #include <cmath>
 #include <random>
+#include <utility>
 #include <vector>
 #include <unordered_map>
 #include <string>
@@ -22,13 +23,13 @@
 //rule of five??
 
 //User
-User::User(const std::string &name) : name(name) {}
+User::User(std::string name) : name(std::move(name)) {}
 
 std::vector<Watchable*> User::get_history() const {return this->history;}
 
 std::string User::getName() const { return this->name; }
 
-void User::setUserName(std::string newName) { this->name = name; }
+void User::setUserName(std::string newName) { this->name = std::move(newName); }
 
 void User::setToHistory(Watchable *watched) { /////////NEW
     this->history.push_back(watched);
@@ -43,8 +44,7 @@ Watchable* LengthRecommenderUser::getRecommendation(Session &s) {
     Watchable* lastWatched = history.at(history.size() - 1);
     if(lastWatched->getNextWatchable(s) != nullptr)
         return lastWatched->getNextWatchable(s);
-
-else {
+    else {
         //get average length
         int count = 0;
         int lenSum = 0;
@@ -55,7 +55,7 @@ else {
         }
         int avgLen = (int) lenSum / count;
 
-        std::vector<Watchable*> recommendations;
+        std::vector<Watchable *> recommendations;
 
         //find the minimal difference between average length to every content's length
         int difLen = 1000000; //set the min dif length to a max value
@@ -70,7 +70,7 @@ else {
                     if (temp == secTemp)
                         exists = true;
                 }
-                if(!exists)
+                if (!exists)
                     difLen = std::abs(avgLen - currentLen);
             }
         }
@@ -87,13 +87,13 @@ else {
                     if (temp == secTemp)
                         exists = true;
                 }
-                if(!exists)
+                if (!exists)
                     recommendations.push_back(temp);
             }
         }
 
         Watchable *output = nullptr;
-        if (recommendations.size() == 0) return output; //no recommendations
+        if (recommendations.empty()) return output; //no recommendations
         else if (recommendations.size() == 1) return recommendations.at(0); //one recommendation
         else { //several recommendations
             //get the content with the minimal index
@@ -101,7 +101,7 @@ else {
             for (const auto &elem : recommendations) {
                 Watchable *temp = elem;
                 if (temp->getId() < i) {
-                    i = temp->getId();
+                    i = (int)temp->getId();
                     output = temp;
                 }
             }
@@ -124,7 +124,7 @@ Watchable* RerunRecommenderUser::getRecommendation(Session &s) {
     else {
         Watchable* output = nullptr;
         int n = history.size();
-        int lastIndex = history.size() - 1;
+        int lastIndex = (int)history.size() - 1;
         int nextIndex = (lastIndex + 1) % n;
 
         if(nextIndex >= 0 & nextIndex < n)
@@ -160,7 +160,7 @@ Watchable* GenreRecommenderUser::getRecommendation(Session &s) {
         for (const auto &elem : watchedGenres) {
             std::string watched = elem;
             bool found = false;
-            if (genresCounter.size() == 0)
+            if (genresCounter.empty())//TODO --*
                 genresCounter.insert({watched, 1});
             else {
                 for (auto currGen : genresCounter) {
@@ -179,7 +179,7 @@ Watchable* GenreRecommenderUser::getRecommendation(Session &s) {
 
         //3. find the most popular genre
         int maxTags = 0;
-        for (auto currGen : genresCounter) {
+        for (const auto& currGen : genresCounter) {
             if (currGen.second >= maxTags) {
                 maxTags = currGen.second;
             }
@@ -187,20 +187,20 @@ Watchable* GenreRecommenderUser::getRecommendation(Session &s) {
 
         //4. create a vector with most popular genres (in order to check if there are more than one)
         std::vector<std::string> popGens;
-        for (auto currGen : genresCounter) {
+        for (const auto& currGen : genresCounter) {
             if (currGen.second == maxTags)
                 popGens.push_back(currGen.first);
         }
         sort(popGens.begin(), popGens.end());
 
         //5. find the content we want to recommend the user, checking he hasn't watched it before
-        for (const auto &elem1 : popGens) {
-            std::string currGen = elem1;
+        for (const auto &currGen : popGens) {
+            //std::string currGen = elem1;//TODO
             for (const auto &elem2 : s.getContent()) {
                 Watchable *currContent = elem2;
                 if (std::find(history.begin(), history.end(), currContent) == history.end()) {
-                    for (const auto &elem3 : currContent->getTags()) {
-                        std::string currTag = elem3;
+                    for (const auto &currTag : currContent->getTags()) {
+                        //std::string currTag = elem3;
                         if (currGen == currTag)
                             return currContent;
                     }
