@@ -240,7 +240,7 @@ void Watch::act(Session& sess) {
                 sess.addToHIstory(nextWatchable);
                 sess.addActionToLog(this);
 
-                Watchable* nextWatchable = sess.getActiveUser()->getRecommendation(sess);
+                nextWatchable = sess.getActiveUser()->getRecommendation(sess);
                 cout << "We recommend watching " << nextWatchable->toString() << "continue watching? [y/n]" <<endl;
                 string input;
                 getline (cin >> ws, input);
