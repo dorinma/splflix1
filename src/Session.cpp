@@ -132,7 +132,7 @@ Watchable* Session::getSomethingToWatch(std::string id) {
 void Session :: start() {
 
     cout << "SPLFLIX is now on!" << endl;
-
+    bool validInput = true;
 
     while (!this->terminate){
 
@@ -183,8 +183,10 @@ void Session :: start() {
 
         else {
             cout << "wrong request" << endl;
-        }
+            validInput = false;
 
-        baseAction->act(*this);
+        }
+        if(validInput)
+          baseAction->act(*this);
     }
 }

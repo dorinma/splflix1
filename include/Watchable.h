@@ -24,7 +24,7 @@ public:
 private:
     const long id;
     int length;
-    std::vector<std::st{}ring> tags;
+    std::vector<std::string> tags;
 };
 
 class Movie : public Watchable{
