@@ -21,17 +21,17 @@ void BaseAction::error(const std::string &errorMsg) {
 std::string BaseAction::getErrorMsg() const { return errorMsg;} //" Error: %n", errorMsg; }
 
 
-//-----Create user------ //DONEEEEEE
+//-----Create user------ //DONEEEE
 CreateUser::CreateUser () = default;
 void CreateUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
     std::string reco = userInput.substr(userInput.length()-3);
     int end;
-    end = (int) userInput.length() - 5 - userInput.find(" ");
+    end = (int)userInput.length() - 5 - (int)userInput.find(' ');
     std::string name;
-    name = userInput.substr(userInput.find(" ") + 1, end);
+    name = userInput.substr(userInput.find(' ') + 1, end);
 
-    User *newUser;
+    User *newUser = nullptr;
     if (sess.getUserByString(name) != nullptr)
     {
         this->error("user with this name exist already");
@@ -61,10 +61,10 @@ std::string CreateUser::toString() const {
 
 
 //------Change active user----- ////DONEEEEEE
-ChangeActiveUser::ChangeActiveUser () {}
+ChangeActiveUser::ChangeActiveUser () = default;
 void ChangeActiveUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
-    std::string changedUser = userInput.substr(userInput.find(" ")+1);
+    std::string changedUser = userInput.substr(userInput.find(' ')+1);
     User *user;
     user = sess.getUserByString(changedUser);
     if (sess.getUserByString(changedUser) == nullptr) {
@@ -88,10 +88,10 @@ std::string ChangeActiveUser::toString() const {
 
 
 //------Delete user------ //DONEEEEE
-DeleteUser::DeleteUser() {}
+DeleteUser::DeleteUser() = default;
 void DeleteUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
-    std::string userToDelete = userInput.substr(userInput.find(" ")+1);
+    std::string userToDelete = userInput.substr(userInput.find(' ')+1);
     User *user;
     user = sess.getUserByString(userToDelete);
     if (user == nullptr){
@@ -116,12 +116,12 @@ std::string DeleteUser::toString() const {
 
 
 //Duplicate user
-DuplicateUser::DuplicateUser() {}
+DuplicateUser::DuplicateUser() = default;
 void DuplicateUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
-    std::string oldUserName = userInput.substr(userInput.find(" ")+1, userInput.find(" ")-2);
-    int tmp = oldUserName.size() + 2;
-    std::string newUserName = userInput.substr(userInput.find(" ") + tmp);
+    std::string oldUserName = userInput.substr(userInput.find(' ')+1, userInput.find(' ')-2);
+    int tmp = (int)oldUserName.size() + 2;
+    std::string newUserName = userInput.substr(userInput.find(' ') + tmp);
     User *newUser;
     if (sess.getUserByString(oldUserName) == nullptr){
     this->error("user to duplicate from does not exist");}
@@ -148,19 +148,19 @@ std::string DuplicateUser::toString() const {
 
 
 //Print content list //DONEEE
-PrintContentList::PrintContentList() {}
+PrintContentList::PrintContentList() = default;
 void PrintContentList::act(Session& sess) {
 
     vector<Watchable *> contentList = sess.getContent();
-    for (int i = 0; i < contentList.size(); i++)
+    for (auto & i : contentList)
     {
-        long id = contentList[i]->getId();
-        string name = contentList[i]->toString();
-        int length = contentList[i]->getLength();
-        vector<string> thisTags = contentList[i]->getTags();
-        string tags = "";
-        for (int k=0; k<thisTags.size(); k++) {
-            tags = tags + thisTags[k] + ", ";
+        long id = i->getId();
+        string name = i->toString();
+        int length = i->getLength();
+        vector<string> thisTags = i->getTags();
+        string tags;
+        for (const auto & thisTag : thisTags) {
+            tags += thisTag + ", ";
         }
         tags = tags.substr(0, tags.size()-2);
         cout << id << ". " << name << " " << length << " minutes [" << tags << "]" << endl;
@@ -180,17 +180,17 @@ std::string PrintContentList::toString() const {
 
 
 //Print watch history //DONEEEEE
-PrintWatchHistory::PrintWatchHistory() {}
+PrintWatchHistory::PrintWatchHistory() = default;
 void PrintWatchHistory::act(Session& sess) {
     string name = sess.getActiveUser()->getName();
     cout << "Watch history for " << name << endl;
     vector<Watchable *> history = sess.getActiveUser()->get_history();
-    if (history.size() == 0)
+    if (history.empty())
         cout <<"nothing was watched. you need to stop studying" << endl;
-    for (int i = 0; i < history.size(); i++)
+    for (auto & i : history)
     {
-        long id = history[i]->getId();
-        string name = history[i]->toString();
+        int id = (int)i->getId();
+        string name = i->toString();
         cout << id << ". " << name << endl;
 
     }
@@ -201,12 +201,12 @@ std::string PrintWatchHistory::toString() const {}
 
 
 //Print actions log
-PrintActionsLog::PrintActionsLog() {}
+PrintActionsLog::PrintActionsLog() = default;
 void PrintActionsLog::act(Session& sess) {
     vector<BaseAction *> action = sess.getActionLog();
-    for (int i = 0; i < action.size(); i++)
+    for (auto & i : action)
     {
-      cout << action[i]->toString();
+      cout << i->toString();
     }
     complete();
     sess.addActionToLog(this);
@@ -215,11 +215,11 @@ std::string PrintActionsLog::toString() const {}
 
 
 //Watch //DONEEEEE
-Watch::Watch() {}
+Watch::Watch() = default;
 void Watch::act(Session& sess) {
 
     std::string userInput = sess.getSessionInput();
-    std::string idToWatch = userInput.substr(userInput.find(" ")+1);
+    std::string idToWatch = userInput.substr(userInput.find(' ')+1);
 
         if (sess.getSomethingToWatch(idToWatch) == nullptr) {
             this->error("content with this id doesnt exist");
@@ -240,7 +240,7 @@ void Watch::act(Session& sess) {
             while (toContinueWatching)
             {
                 cout << "Watching " << nextWatchable->toString() << endl;
-               int nextId = nextWatchable->getId();
+               int nextId = (int)nextWatchable->getId();
 
                 stringstream ss;
                 ss << nextId;
@@ -266,7 +266,7 @@ std::string Watch::toString() const {}
 
 
 //Exit //DONEEEE
-Exit::Exit() {}
+Exit::Exit() = default;
 void Exit::act(Session& sess) {
     sess.setTerminate("false");
 }
