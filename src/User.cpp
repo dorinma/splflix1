@@ -38,13 +38,14 @@ LengthRecommenderUser::LengthRecommenderUser(const std::string &name) :User(name
 Watchable* LengthRecommenderUser::getRecommendation(Session &s) {
 
     //in case last watched content is an episode
-    Watchable* lastWatched = history.at(history.size() - 1);
+    Watchable* lastWatched = history.at(0);
     if(lastWatched->getNextWatchable(s) != nullptr)
         return lastWatched->getNextWatchable(s);
 
 else {
         //get average length
-        int count, lenSum = 0;
+        int count = 0;
+        int lenSum = 0;
         for (const auto &elem : history) {
             Watchable *temp = elem;
             count++;
@@ -53,22 +54,42 @@ else {
         int avgLen = (int) lenSum / count;
 
         std::vector<Watchable*> recommendations;
-        int difLen = INTMAX_MAX; //set the min dif length to the max value
 
+        //find the minimal difference between average length to every content's length
+        int difLen = 1000000; //set the min dif length to a max value
         for (const auto &elem1 : s.getContent()) {
             Watchable *temp = elem1;
             int currentLen = temp->getLength();
             if ((std::abs(avgLen - currentLen)) <= difLen) {
                 //check if this content isn't in the user's history
+                bool exists = false;
                 for (const auto &elem2 : history) {
                     Watchable *secTemp = elem2;
-                    if (temp != secTemp) {
-                        difLen = std::abs(avgLen - currentLen);
-                        recommendations.push_back(temp);
-                    }
+                    if (temp == secTemp)
+                        exists = true;
                 }
+                if(!exists)
+                    difLen = std::abs(avgLen - currentLen);
             }
         }
+
+        //get every content with wanted length
+        for (const auto &elem1 : s.getContent()) {
+            Watchable *temp = elem1;
+            int currentLen = temp->getLength();
+            if ((std::abs(avgLen - currentLen)) == difLen) {
+                //check if this content isn't in the user's history
+                bool exists = false;
+                for (const auto &elem2 : history) {
+                    Watchable *secTemp = elem2;
+                    if (temp == secTemp)
+                        exists = true;
+                }
+                if(!exists)
+                    recommendations.push_back(temp);
+            }
+        }
+
         Watchable *output = nullptr;
         if (recommendations.size() == 0) return output; //no recommendations
         else if (recommendations.size() == 1) return recommendations.at(0); //one recommendation
