@@ -28,6 +28,8 @@ std::vector<Watchable*> User::get_history() const {return this->history;}
 
 std::string User::getName() const { return this->name; }
 
+void User::setUserName(std::string newName) { this->name = name; }
+
 void User::setToHistory(Watchable *watched) { /////////NEW
     this->history.push_back(watched);
 }
@@ -138,17 +140,19 @@ GenreRecommenderUser::GenreRecommenderUser(const std::string &name) :User(name){
 Watchable* GenreRecommenderUser::getRecommendation(Session &s) {
 
     //in case last watched content is an episode
-    Watchable* lastWatched = history.at(history.size() - 1);
-    if(lastWatched->getNextWatchable(s) != nullptr)
+    Watchable *lastWatched = history.at(history.size() - 1);
+    if (lastWatched->getNextWatchable(s) != nullptr)
         return lastWatched->getNextWatchable(s);
 
     else {
         //1. find all the genres the user watched
         std::vector<std::string> watchedGenres;
         for (const auto &elem : history) {
-            Watchable* temp = elem;
-            watchedGenres.insert(watchedGenres.end(), temp->getTags().begin(), temp->getTags().end());
-            //watchedGenres.push_back(temp->getTags()); //can i push a vector into another vector?
+            Watchable *temp = elem;
+            for (const auto &tag : temp->getTags()) {
+                watchedGenres.push_back(tag);
+            }
+            //watchedGenres.insert(watchedGenres.end(), temp->getTags().begin(), temp->getTags().end());
         }
 
         //2. count how many times he watched every genre
@@ -156,48 +160,54 @@ Watchable* GenreRecommenderUser::getRecommendation(Session &s) {
         for (const auto &elem : watchedGenres) {
             std::string watched = elem;
             bool found = false;
-            for (auto currGen : genresCounter) {
-                while (!found) {
-                    if (watched == currGen.first) {
-                        currGen.second++;
-                        found = true;
-                    }
-                    genresCounter.insert({watched, 1});
-                }
-            }
-
-            //3. find the most popular genre
-            int maxTags = 0;
-            for (auto currGen : genresCounter) {
-                if (currGen.second >= maxTags) {
-                    maxTags = currGen.second;
-                }
-            }
-
-            //4. create a vector with most popular genres (in order to check if there are more than one)
-            std::vector<std::string> popGens;
-            for (auto currGen : genresCounter) {
-                if (currGen.second == maxTags)
-                    popGens.push_back(currGen.first);
-            }
-            sort(popGens.begin(), popGens.end());
-
-            //5. find the content we want to recommend the user, checking he hasn't watched it before
-            for (const auto &elem1 : popGens) {
-                std::string currGen = elem1;
-                for (const auto &elem2 : s.getContent()) {
-                    Watchable* currContent = elem2;
-                    if (std::find(history.begin(), history.end(), currContent) == history.end()) {
-                        for (const auto &elem3 : currContent->getTags()) {
-                            std::string currTag = elem3;
-                            if (currGen == currTag)
-                                return currContent;
+            if (genresCounter.size() == 0)
+                genresCounter.insert({watched, 1});
+            else {
+                for (auto currGen : genresCounter) {
+                    while (!found) {
+                        if (watched == currGen.first) {
+                            currGen.second++;
+                            found = true;
+                        } else {
+                            genresCounter.insert({watched, 1});
+                            found = true;
                         }
                     }
                 }
             }
-
-            return nullptr;
         }
+
+        //3. find the most popular genre
+        int maxTags = 0;
+        for (auto currGen : genresCounter) {
+            if (currGen.second >= maxTags) {
+                maxTags = currGen.second;
+            }
+        }
+
+        //4. create a vector with most popular genres (in order to check if there are more than one)
+        std::vector<std::string> popGens;
+        for (auto currGen : genresCounter) {
+            if (currGen.second == maxTags)
+                popGens.push_back(currGen.first);
+        }
+        sort(popGens.begin(), popGens.end());
+
+        //5. find the content we want to recommend the user, checking he hasn't watched it before
+        for (const auto &elem1 : popGens) {
+            std::string currGen = elem1;
+            for (const auto &elem2 : s.getContent()) {
+                Watchable *currContent = elem2;
+                if (std::find(history.begin(), history.end(), currContent) == history.end()) {
+                    for (const auto &elem3 : currContent->getTags()) {
+                        std::string currTag = elem3;
+                        if (currGen == currTag)
+                            return currContent;
+                    }
+                }
+            }
+        }
+
+        return nullptr;
     }
 }

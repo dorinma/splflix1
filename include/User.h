@@ -15,11 +15,12 @@ public:
     virtual Watchable* getRecommendation(Session& s) = 0;
     std::string getName() const;
     std::vector<Watchable*> get_history() const;
-    void setToHistory (Watchable *watched); /////////////NEW
+    void setToHistory (Watchable *watched);
+    void setUserName(std::string newName);
 protected:
     std::vector<Watchable*> history;
 private:
-    const std::string name;
+    std::string name;
 
 };
 
