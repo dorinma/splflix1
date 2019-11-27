@@ -38,7 +38,7 @@ LengthRecommenderUser::LengthRecommenderUser(const std::string &name) :User(name
 Watchable* LengthRecommenderUser::getRecommendation(Session &s) {
 
     //in case last watched content is an episode
-    Watchable* lastWatched = history.at(0);
+    Watchable* lastWatched = history.at(history.size() - 1);
     if(lastWatched->getNextWatchable(s) != nullptr)
         return lastWatched->getNextWatchable(s);
 

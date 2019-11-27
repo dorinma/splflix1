@@ -21,7 +21,7 @@ void BaseAction::error(const std::string &errorMsg) {
 std::string BaseAction::getErrorMsg() const { return errorMsg;} //" Error: %n", errorMsg; }
 
 
-//-----Create user------
+//-----Create user------ //DONEEEEEE
 CreateUser::CreateUser () {}
 void CreateUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
@@ -58,11 +58,11 @@ std::string CreateUser::toString() const {
 }
 
 
-//------Change active user-----
+//------Change active user----- ////DONEEEEEE
 ChangeActiveUser::ChangeActiveUser () {}
 void ChangeActiveUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
-    std::string changedUser = userInput.substr(userInput.find(" "));
+    std::string changedUser = userInput.substr(userInput.find(" ")+1);
     User *user;
     user = sess.getUserByString(changedUser);
     if (sess.getUserByString(changedUser) == nullptr) {
@@ -85,7 +85,7 @@ std::string ChangeActiveUser::toString() const {
 }
 
 
-//------Delete user------
+//------Delete user------ //DONEEEEE
 DeleteUser::DeleteUser() {}
 void DeleteUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
@@ -137,7 +137,7 @@ void DuplicateUser::act(Session& sess) {
 std::string DuplicateUser::toString() const {}
 
 
-//Print content list
+//Print content list //DONEEEE
 PrintContentList::PrintContentList() {}
 void PrintContentList::act(Session& sess) {
 
@@ -169,7 +169,7 @@ std::string PrintContentList::toString() const {
 }
 
 
-//Print watch history
+//Print watch history //DONEEEEE
 PrintWatchHistory::PrintWatchHistory() {}
 void PrintWatchHistory::act(Session& sess) {
     string name = sess.getActiveUser()->getName();
@@ -204,7 +204,7 @@ void PrintActionsLog::act(Session& sess) {
 std::string PrintActionsLog::toString() const {}
 
 
-//Watch
+//Watch //DONEEEEE
 Watch::Watch() {}
 void Watch::act(Session& sess) {
 
@@ -240,7 +240,7 @@ void Watch::act(Session& sess) {
                 sess.addToHIstory(nextWatchable);
                 sess.addActionToLog(this);
 
-                Watchable* nextWatchable = sess.getActiveUser()->getRecommendation(sess);
+                nextWatchable = sess.getActiveUser()->getRecommendation(sess);
                 cout << "We recommend watching " << nextWatchable->toString() << "continue watching? [y/n]" <<endl;
                 string input;
                 getline (cin >> ws, input);
@@ -255,5 +255,7 @@ std::string Watch::toString() const {}
 
 //Exit
 Exit::Exit() {}
-void Exit::act(Session& sess) {}
+void Exit::act(Session& sess) {
+    sess.setTerminate("false");
+}
 std::string Exit::toString() const {}

@@ -105,6 +105,8 @@ void Session::addToHIstory(Watchable *watched) {
 
 void Session::setActiveUser(User *user) {this->activeUser = user;}
 
+void Session::setTerminate(bool toContinue) {this->terminate=toContinue;}
+
 void Session::deleteUserFromMap(std::string name) {this->userMap.erase(name);}
 
 std::vector<Watchable*> Session::getContent() { return content; }
@@ -124,6 +126,7 @@ Watchable* Session::getSomethingToWatch(std::string id) {
             toWatch = elem;
     }
     return toWatch;}
+
 
 void Session :: start() {
 

@@ -28,6 +28,7 @@ public:
     void deleteUserFromMap(std::string name);
     std::vector<Watchable*> getContent();
     std::vector<BaseAction*> getActionLog();
+    void setTerminate(bool toContinue);
 
 private:
     std::vector<Watchable*> content;
@@ -35,5 +36,6 @@ private:
     std::unordered_map<std::string,User*> userMap;
     User* activeUser;
     std::string sessionInput;
+    bool terminate = false;
 };
 #endif
