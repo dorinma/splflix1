@@ -265,7 +265,7 @@ void Watch::act(Session& sess) {
 std::string Watch::toString() const {}
 
 
-//Exit //DONEEEE
+//Exit
 Exit::Exit() = default;
 void Exit::act(Session& sess) {
     sess.setTerminate("false");
