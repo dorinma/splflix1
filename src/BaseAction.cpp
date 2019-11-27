@@ -11,7 +11,7 @@ using namespace std;
 
 
 //-----BaseAction------
-BaseAction::BaseAction() {}
+BaseAction::BaseAction() = default;
 ActionStatus BaseAction::getStatus() const { return this->status; };
 void BaseAction::complete() { this->status = COMPLETED; }
 void BaseAction::error(const std::string &errorMsg) {
@@ -22,12 +22,14 @@ std::string BaseAction::getErrorMsg() const { return errorMsg;} //" Error: %n", 
 
 
 //-----Create user------ //DONEEEEEE
-CreateUser::CreateUser () {}
+CreateUser::CreateUser () = default;
 void CreateUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
     std::string reco = userInput.substr(userInput.length()-3);
-    int end = userInput.length()-5-userInput.find(" ");
-    std::string name = userInput.substr(userInput.find(" ")+1, end);
+    int end;
+    end = (int) userInput.length() - 5 - userInput.find(" ");
+    std::string name;
+    name = userInput.substr(userInput.find(" ") + 1, end);
 
     User *newUser;
     if (sess.getUserByString(name) != nullptr)
@@ -145,7 +147,7 @@ std::string DuplicateUser::toString() const {
 }
 
 
-//Print content list //DONEEEE
+//Print content list //DONEEE
 PrintContentList::PrintContentList() {}
 void PrintContentList::act(Session& sess) {
 
