@@ -12,6 +12,7 @@ class Watchable;
 class Session{
 public:
     Session(const std::string &configFilePath);
+    std::string nowPlaying;
     ~Session();
     void start();
     void clean();

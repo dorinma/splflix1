@@ -24,7 +24,7 @@
 //User
 User::User(const std::string &name) : name(name) {}
 
-std::vector<Watchable*> User::get_history() const {}
+std::vector<Watchable*> User::get_history() const {return this->history;}
 
 std::string User::getName() const { return this->name; }
 

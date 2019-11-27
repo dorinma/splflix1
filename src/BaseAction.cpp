@@ -1,5 +1,6 @@
 
 
+#include <sstream>
 #include "../include/Action.h"
 #include "../include/Session.h"
 #include "../include/User.h"
@@ -174,8 +175,8 @@ void PrintWatchHistory::act(Session& sess) {
     string name = sess.getActiveUser()->getName();
     cout << "Watch history for " << name << endl;
     vector<Watchable *> history = sess.getActiveUser()->get_history();
-    //if (history.size() == 0)
-      //  cout <<"nothing was watched. you need to stop studying" << endl;
+    if (history.size() == 0)
+        cout <<"nothing was watched. you need to stop studying" << endl;
     for (int i = 0; i < history.size(); i++)
     {
         long id = history[i]->getId();
@@ -213,6 +214,7 @@ void Watch::act(Session& sess) {
         if (sess.getSomethingToWatch(idToWatch) == nullptr) {
             this->error("content with this id doesnt exist");
         } else {
+            sess.nowPlaying = idToWatch;
             cout << "Watching " << sess.getSomethingToWatch(idToWatch)->toString() << endl;
             complete();
             sess.addToHIstory(sess.getSomethingToWatch(idToWatch));
@@ -220,7 +222,7 @@ void Watch::act(Session& sess) {
 
             bool toContinueWatching = true;
             Watchable* nextWatchable = sess.getActiveUser()->getRecommendation(sess);
-            cout << "We recommend watching " << nextWatchable->toString() << "continue watching? [y/n]" <<endl;
+            cout << "We recommend watching " << nextWatchable->toString() << " continue watching? [y/n]" <<endl;
             string input;
             getline (cin >> ws, input);
             if(input == "n")
@@ -228,6 +230,12 @@ void Watch::act(Session& sess) {
             while (toContinueWatching)
             {
                 cout << "Watching " << nextWatchable->toString() << endl;
+               int nextId = nextWatchable->getId();
+
+                stringstream ss;
+                ss << nextId;
+                sess.nowPlaying = ss.str();
+
                 complete();
                 sess.addToHIstory(nextWatchable);
                 sess.addActionToLog(this);
