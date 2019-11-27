@@ -28,6 +28,10 @@ std::vector<Watchable*> User::get_history() const {}
 
 std::string User::getName() const { return this->name; }
 
+void User::setToHistory(Watchable *watched) { /////////NEW
+    this->history.push_back(watched);
+}
+
 //----------------Length recommender----------------
 LengthRecommenderUser::LengthRecommenderUser(const std::string &name) :User(name) {}
 
