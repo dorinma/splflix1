@@ -70,9 +70,6 @@ Session :: Session(const std::string &configFilePath){
         userMap.insert({"default", defUser});
         this->activeUser = defUser;
     }
-
-
-
 }
 
 //destructor
@@ -135,7 +132,7 @@ void Session :: start() {
     bool validInput = true;
 
     while (!this->terminate){
-
+        validInput = true;
         std::string input;
         getline (cin >> ws, input);
         sessionInput = input;

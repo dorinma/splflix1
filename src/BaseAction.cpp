@@ -98,7 +98,6 @@ void DeleteUser::act(Session& sess) {
     this->error("user to delete does not exist");
     }
     else{
-        sess.setActiveUser(sess.getUserByString("default"));
         sess.deleteUserFromMap(userToDelete);
         complete();
         sess.addActionToLog(this);
