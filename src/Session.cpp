@@ -10,6 +10,7 @@
 using namespace std;
 using json = nlohmann :: json;
 
+//destructor
 //copy constructor
 //move constructor
 //copy assignment operator
@@ -51,10 +52,9 @@ Session :: Session(const std::string &configFilePath){
             tags.push_back(j["tv_series"][k]["tags"][tagsCount]);
             tagsCount++;
         }
-        for (int s = 1; s <= seasons; ++s) {
-            for (int e = 1; e <= j["tv_series"][k]["seasons"][s]; ++e) {
-                Episode *episode = new Episode(i + 1, j["tv_series"][k]["name"],j["tv_series"][k]["episode_length"],s, e, tags);
-                //if(j["tv_series"][k]["seasons"][s]["name"] == j["tv_series"][k]["seasons"][s + 1]["name"])
+        for (int s = 0; s <= seasons; s++) {
+            for (int e = 1; e <= j["tv_series"][k]["seasons"][s]; e++) {
+                Episode *episode = new Episode(i + 1, j["tv_series"][k]["name"],j["tv_series"][k]["episode_length"],s+1, e, tags);
                 if(s == seasons & e == j["tv_series"][k]["seasons"][s]) //if we're at the last episode
                     episode->setNextEpisodeId(0);
                 else
@@ -72,10 +72,63 @@ Session :: Session(const std::string &configFilePath){
     }
 }
 
-//destructor
-Session :: ~Session(){}
+//----------destructor----------
+Session :: ~Session(){
+/*        std::vector<Watchable*> content; ----deleted
+    std::vector<BaseAction*> actionsLog; ----deleted
+    std::unordered_map<std::string,User*> userMap; ----deleted
+    User* activeUser; ----deleted
+    std::string sessionInput; ----std::string and not a pointer so no need to destruct
+    */
 
-void Session :: clean() {}
+    for(Watchable *watch : content) {
+        delete watch;
+    }
+    this->content.clear();
+
+    this->activeUser = nullptr;
+
+    for(const auto elem : userMap) {
+        delete elem.second;
+    }
+    this->userMap.clear();
+
+    for(BaseAction *action : actionsLog) {
+        delete action;
+    }
+    this->actionsLog.clear();
+}
+
+//----------copy constructor----------
+Session :: Session(const Session &other) {
+    /*        std::vector<Watchable*> content; ----deleted
+    std::vector<BaseAction*> actionsLog; ----deleted
+    std::unordered_map<std::string,User*> userMap; ----deleted
+    User* activeUser; ----deleted
+    std::string sessionInput; ----std::string and not a pointer so no need to destruct
+    */
+
+    //TODO : do i need to create vectors and push back the content or is this enough?
+    this->content = other.content;
+    this->actionsLog = other.actionsLog;
+    this->userMap = other.userMap;
+    this->activeUser = other.activeUser;
+    this->sessionInput = other.sessionInput;
+}
+
+//----------copy assignment operator----------
+Session& Session::operator=(const Session &other) {
+
+    //TODO : do i need to create vectors and push back the content or is this enough?
+    this->content = other.content;
+    this->actionsLog = other.actionsLog;
+    this->userMap = other.userMap;
+    this->activeUser = other.activeUser;
+    this->sessionInput = other.sessionInput;
+    return *this;
+}
+
+void Session :: clean() {} //TODO : implement?
 
 std::string Session::getSessionInput() {return this->sessionInput;}
 

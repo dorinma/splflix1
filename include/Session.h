@@ -14,6 +14,8 @@ public:
     Session(const std::string &configFilePath);
     std::string nowPlaying;
     ~Session();
+    Session(const Session &other);
+    Session& operator=(const Session& other);
     void start();
     void clean();
     std::string getSessionInput();

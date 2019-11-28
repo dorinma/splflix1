@@ -13,15 +13,6 @@
 #include <algorithm>
 
 
-//Rule of 5!!!!!
-//copy constructor
-//move constructor
-//copy assignment operator
-//move assignment operator
-
-//TODO
-//rule of five??
-
 //User
 User::User(std::string name) : name(std::move(name)) {}
 
@@ -160,7 +151,7 @@ Watchable* GenreRecommenderUser::getRecommendation(Session &s) {
         for (const auto &elem : watchedGenres) {
             std::string watched = elem;
             bool found = false;
-            if (genresCounter.empty())//TODO --*
+            if (genresCounter.empty())
                 genresCounter.insert({watched, 1});
             else {
                 for (auto currGen : genresCounter) {
@@ -195,7 +186,6 @@ Watchable* GenreRecommenderUser::getRecommendation(Session &s) {
 
         //5. find the content we want to recommend the user, checking he hasn't watched it before
         for (const auto &currGen : popGens) {
-            //std::string currGen = elem1;//TODO
             for (const auto &elem2 : s.getContent()) {
                 Watchable *currContent = elem2;
                 if (std::find(history.begin(), history.end(), currContent) == history.end()) {
