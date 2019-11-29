@@ -1,14 +1,11 @@
 
-
 #include <sstream>
 #include "../include/Action.h"
 #include "../include/Session.h"
 #include "../include/User.h"
 #include "../include/Watchable.h"
 
-
 using namespace std;
-
 
 //-----BaseAction------
 BaseAction::BaseAction() = default;
@@ -68,7 +65,7 @@ void ChangeActiveUser::act(Session& sess) {
     User *user;
     user = sess.getUserByString(changedUser);
     if (sess.getUserByString(changedUser) == nullptr) {
-         this->error("user to change does not exist");
+        this->error("user to change does not exist");
     }
     else {
         sess.setActiveUser(user);
@@ -95,7 +92,7 @@ void DeleteUser::act(Session& sess) {
     User *user;
     user = sess.getUserByString(userToDelete);
     if (user == nullptr){
-    this->error("user to delete does not exist");
+        this->error("user to delete does not exist");
     }
     else{
         sess.deleteUserFromMap(userToDelete);
@@ -118,18 +115,35 @@ std::string DeleteUser::toString() const {
 DuplicateUser::DuplicateUser() = default;
 void DuplicateUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
-    std::string oldUserName = userInput.substr(userInput.find(' ')+1, userInput.find(' ')-2);
-    int tmp = (int)oldUserName.size() + 2;
-    std::string newUserName = userInput.substr(userInput.find(' ') + tmp);
-    User *newUser;
+    int count = 0;
+    string word = "";
+    std::string newUserName;
+    std::string oldUserName;
+    for (auto x : userInput)
+    {
+        if (x == ' ')
+        {
+            count++;
+            if (count == 2)
+                oldUserName = word;
+            word = "";
+        }
+        else
+        {
+            word = word + x;
+        }
+        newUserName = word;
+    }
+    User *tempUser;
     if (sess.getUserByString(oldUserName) == nullptr){
-    this->error("user to duplicate from does not exist");}
+        this->error("user to duplicate from does not exist");}
     else if(sess.getUserByString(newUserName) != nullptr){
-        this->error(("this user new exist already, choose new one"));}
+        this->error(("this user name exist already, choose new one"));}
     else
     {
-        newUser = sess.getUserByString(oldUserName);
-        newUser->setUserName(newUserName);
+        tempUser = sess.getUserByString(oldUserName);
+        User *newUser =  tempUser->toDuplicate(newUserName, *tempUser);
+        //newUser->setUserName(newUserName);
         sess.addUserToMap(newUser);
         complete();
         sess.addActionToLog(this);
@@ -142,7 +156,7 @@ std::string DuplicateUser::toString() const {
     else if (this->getStatus() == COMPLETED)
         cout<< "user coppied" << endl;
     else
-        cout<< "unkown error" << endl;
+        cout<< "unknow error" << endl;
 }
 
 
@@ -205,7 +219,7 @@ void PrintActionsLog::act(Session& sess) {
     vector<BaseAction *> action = sess.getActionLog();
     for (auto & i : action)
     {
-      cout << i->toString();
+        cout << i->toString();
     }
     complete();
     sess.addActionToLog(this);
@@ -220,46 +234,46 @@ void Watch::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
     std::string idToWatch = userInput.substr(userInput.find(' ')+1);
 
-        if (sess.getSomethingToWatch(idToWatch) == nullptr) {
-            this->error("content with this id doesnt exist");
-        } else {
-            sess.nowPlaying = idToWatch;
-            cout << "Watching " << sess.getSomethingToWatch(idToWatch)->toString() << endl;
+    if (sess.getSomethingToWatch(idToWatch) == nullptr) {
+        this->error("content with this id doesnt exist");
+    } else {
+        sess.nowPlaying = idToWatch;
+        cout << "Watching " << sess.getSomethingToWatch(idToWatch)->toString() << endl;
+        complete();
+        sess.addToHistory(sess.getSomethingToWatch(idToWatch));
+        sess.addActionToLog(this);
+
+        bool toContinueWatching = true;
+        Watchable* nextWatchable = sess.getActiveUser()->getRecommendation(sess);
+        cout << "We recommend watching " << nextWatchable->toString() << " continue watching? [y/n]" <<endl;
+        string input;
+        getline (cin >> ws, input);
+        if(input == "n")
+            toContinueWatching = false;
+        while (toContinueWatching)
+        {
+            cout << "Watching " << nextWatchable->toString() << endl;
+            int nextId = (int)nextWatchable->getId();
+
+            stringstream ss;
+            ss << nextId;
+            sess.nowPlaying = ss.str();
+
             complete();
-            sess.addToHistory(sess.getSomethingToWatch(idToWatch));
+            sess.addToHistory(nextWatchable);
             sess.addActionToLog(this);
 
-            bool toContinueWatching = true;
-            Watchable* nextWatchable = sess.getActiveUser()->getRecommendation(sess);
-            cout << "We recommend watching " << nextWatchable->toString() << " continue watching? [y/n]" <<endl;
+            nextWatchable = sess.getActiveUser()->getRecommendation(sess);
+            cout << "We recommend watching " << nextWatchable->toString() << "continue watching? [y/n]" <<endl;
             string input;
             getline (cin >> ws, input);
-            if(input == "n")
+            if(input != "y") {
                 toContinueWatching = false;
-            while (toContinueWatching)
-            {
-                cout << "Watching " << nextWatchable->toString() << endl;
-               int nextId = (int)nextWatchable->getId();
-
-                stringstream ss;
-                ss << nextId;
-                sess.nowPlaying = ss.str();
-
-                complete();
-                sess.addToHistory(nextWatchable);
-                sess.addActionToLog(this);
-
-                nextWatchable = sess.getActiveUser()->getRecommendation(sess);
-                cout << "We recommend watching " << nextWatchable->toString() << "continue watching? [y/n]" <<endl;
-                string input;
-                getline (cin >> ws, input);
-                if(input != "y") {
-                    toContinueWatching = false;
-                    cout << "bing stopped. go work on your splflix" << endl;
-                }
+                cout << "bing stopped. go work on your splflix" << endl;
             }
         }
-   // this->toString();
+    }
+    // this->toString();
 }
 std::string Watch::toString() const {}
 

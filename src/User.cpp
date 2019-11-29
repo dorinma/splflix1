@@ -24,6 +24,7 @@ void User::setUserName(std::string newName) { this->name = std::move(newName); }
 
 void User::setToHistory(Watchable *watched) { /////////NEW
     this->history.push_back(watched);
+
 }
 
 //----------------Length recommender----------------
@@ -101,6 +102,15 @@ Watchable* LengthRecommenderUser::getRecommendation(Session &s) {
         return output;
     }
 }
+User* LengthRecommenderUser::toDuplicate(const std::string &newName, const User &oldUser) {
+    User *newUser = new LengthRecommenderUser(newName);
+    std::vector<Watchable*> historyToCopy = oldUser.get_history();
+    for (int i=0; i<historyToCopy.size(); i++)
+    {
+        newUser->setToHistory(historyToCopy.at(i));
+    }
+    return newUser;
+}
 
 //----------------Rerun recommender----------------
 RerunRecommenderUser::RerunRecommenderUser(const std::string &name) :User(name){}
@@ -123,6 +133,14 @@ Watchable* RerunRecommenderUser::getRecommendation(Session &s) {
 
         return output;
     }
+}
+User* RerunRecommenderUser::toDuplicate(const std::string &newName, const User &oldUser) {
+    User *newUser = new RerunRecommenderUser(newName);
+    std::vector<Watchable *> historyToCopy = oldUser.get_history();
+    for (int i = 0; i < historyToCopy.size(); i++) {
+        newUser->setToHistory(historyToCopy.at(i));
+    }
+    return newUser;
 }
 
 //----------------Genre recommender----------------
@@ -200,4 +218,13 @@ Watchable* GenreRecommenderUser::getRecommendation(Session &s) {
 
         return nullptr;
     }
+}
+User* GenreRecommenderUser::toDuplicate(const std::string &newName, const User &oldUser) {
+    User *newUser = new GenreRecommenderUser(newName);
+    std::vector<Watchable*> historyToCopy = oldUser.get_history();
+    for (int i=0; i<historyToCopy.size(); i++)
+    {
+        newUser->setToHistory(historyToCopy.at(i));
+    }
+    return newUser;
 }

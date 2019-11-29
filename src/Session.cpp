@@ -134,7 +134,7 @@ std::string Session::getSessionInput() {return this->sessionInput;}
 
 std::unordered_map<std::string, User*> Session::getUserMap() { return this->userMap;}
 
-User* Session::getUserByString(std::string name) {
+User* Session::getUserByString(const std::string &name) {
     User* user = nullptr;
     for(const auto& elem : userMap)
     {
@@ -158,13 +158,13 @@ void Session::setActiveUser(User *user) {this->activeUser = user;}
 
 void Session::setTerminate(bool toContinue) {this->terminate=toContinue;}
 
-void Session::deleteUserFromMap(std::string name) {this->userMap.erase(name);}
+void Session::deleteUserFromMap(const std::string &name) {this->userMap.erase(name);}
 
 std::vector<Watchable*> Session::getContent() { return content; }
 
 std::vector<BaseAction*> Session::getActionLog() { return this->actionsLog;}
 
-Watchable* Session::getSomethingToWatch(std::string id) {
+Watchable* Session::getSomethingToWatch(const std::string &id) {
     Watchable* toWatch = nullptr;
     int idInt =0;
     string idString = std::move(id);
