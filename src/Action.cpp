@@ -206,18 +206,19 @@ void PrintWatchHistory::act(Session& sess) {
     cout << "Watch history for " << name << endl;
     vector<Watchable *> history = sess.getActiveUser()->get_history();
     if (history.empty()) {
-        this->error("nothing was watched. you need to stop studying");
+        cout << ("nothing was watched. you need to stop studying") << endl;
         sess.addActionToLog(this);
     }
-    for (auto & i : history)
-    {
-        int id = (int)i->getId();
-        string name = i->toString();
-        cout << id << ". " << name << endl;
+    else {
+        for (auto &i : history) {
+            int id = (int) i->getId();
+            string name = i->toString();
+            cout << id << ". " << name << endl;
 
+        }
+        complete();
+        sess.addActionToLog(this);
     }
-    complete();
-    sess.addActionToLog(this);
 }
 std::string PrintWatchHistory::toString() const {
     if (this->getStatus() == ERROR)
