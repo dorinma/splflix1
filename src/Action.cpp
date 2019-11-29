@@ -32,6 +32,7 @@ void CreateUser::act(Session& sess) {
     if (sess.getUserByString(name) != nullptr)
     {
         this->error("user with this name exist already");
+        sess.addActionToLog(this);
     }
     else {
         if (reco == "len") { newUser = new LengthRecommenderUser(name); }
@@ -49,11 +50,12 @@ void CreateUser::act(Session& sess) {
 }
 std::string CreateUser::toString() const {
     if (this->getStatus() == ERROR)
-        cout<< this->getErrorMsg() << endl;
+        cout<<"ERROR: " << this->getErrorMsg() << endl;
     else if (this->getStatus() == COMPLETED)
-        cout<< "new user was created succesfuly" <<endl;
+        cout<< "createuser COMPLETED" <<endl;
     else
         cout<< "unkown error" <<endl;
+    return "";
 }
 
 
@@ -66,6 +68,7 @@ void ChangeActiveUser::act(Session& sess) {
     user = sess.getUserByString(changedUser);
     if (sess.getUserByString(changedUser) == nullptr) {
         this->error("user to change does not exist");
+        sess.addActionToLog(this);
     }
     else {
         sess.setActiveUser(user);
@@ -76,9 +79,9 @@ void ChangeActiveUser::act(Session& sess) {
 }
 std::string ChangeActiveUser::toString() const {
     if (this->getStatus() == ERROR)
-        cout<< this->getErrorMsg() << endl;
+        cout<< "ERROR: " << this->getErrorMsg() << endl;
     else if (this->getStatus() == COMPLETED)
-        cout<< "user changed" << endl;
+        cout<< "changeuser COMPLETED" << endl;
     else
         cout<< "unkown error" <<endl;
 }
@@ -93,6 +96,7 @@ void DeleteUser::act(Session& sess) {
     user = sess.getUserByString(userToDelete);
     if (user == nullptr){
         this->error("user to delete does not exist");
+        sess.addActionToLog(this);
     }
     else{
         sess.deleteUserFromMap(userToDelete);
@@ -103,11 +107,11 @@ void DeleteUser::act(Session& sess) {
 }
 std::string DeleteUser::toString() const {
     if (this->getStatus() == ERROR)
-        cout<< this->getErrorMsg()<< endl;
+        cout<< "ERROR: " << this->getErrorMsg() << endl;
     else if (this->getStatus() == COMPLETED)
-        cout<< "user deleted" << endl;
+        cout<< "deleteuser COMPLETED" << endl;
     else
-        cout<< "unkown error" << endl;
+        cout<< "unkown error" <<endl;
 }
 
 
@@ -136,14 +140,17 @@ void DuplicateUser::act(Session& sess) {
     }
     User *tempUser;
     if (sess.getUserByString(oldUserName) == nullptr){
-        this->error("user to duplicate from does not exist");}
+        this->error("user to duplicate from does not exist");
+        sess.addActionToLog(this);
+    }
     else if(sess.getUserByString(newUserName) != nullptr){
-        this->error(("this user name exist already, choose new one"));}
+        this->error(("this user name exist already, choose new one"));
+        sess.addActionToLog(this);
+    }
     else
     {
         tempUser = sess.getUserByString(oldUserName);
         User *newUser =  tempUser->toDuplicate(newUserName, *tempUser);
-        //newUser->setUserName(newUserName);
         sess.addUserToMap(newUser);
         complete();
         sess.addActionToLog(this);
@@ -152,15 +159,15 @@ void DuplicateUser::act(Session& sess) {
 }
 std::string DuplicateUser::toString() const {
     if (this->getStatus() == ERROR)
-        cout<< this->getErrorMsg()<< endl;
+        cout<< "ERROR: " << this->getErrorMsg() << endl;
     else if (this->getStatus() == COMPLETED)
-        cout<< "user coppied" << endl;
+        cout<< "dupuser COMPLETED" << endl;
     else
-        cout<< "unknow error" << endl;
+        cout<< "unkown error" <<endl;
 }
 
 
-//Print content list //DONEEE
+//Print content list
 PrintContentList::PrintContentList() = default;
 void PrintContentList::act(Session& sess) {
 
@@ -184,11 +191,11 @@ void PrintContentList::act(Session& sess) {
 }
 std::string PrintContentList::toString() const {
     if (this->getStatus() == ERROR)
-        cout<< this->getErrorMsg()<< endl;
+        cout<< "ERROR: " << this->getErrorMsg() << endl;
     else if (this->getStatus() == COMPLETED)
-        cout<< "content was printed" << endl;
+        cout<< "content COMPLETED" << endl;
     else
-        cout<< "unkown error" << endl;
+        cout<< "unkown error" <<endl;
 }
 
 
@@ -198,8 +205,10 @@ void PrintWatchHistory::act(Session& sess) {
     string name = sess.getActiveUser()->getName();
     cout << "Watch history for " << name << endl;
     vector<Watchable *> history = sess.getActiveUser()->get_history();
-    if (history.empty())
-        cout <<"nothing was watched. you need to stop studying" << endl;
+    if (history.empty()) {
+        this->error("nothing was watched. you need to stop studying");
+        sess.addActionToLog(this);
+    }
     for (auto & i : history)
     {
         int id = (int)i->getId();
@@ -210,21 +219,35 @@ void PrintWatchHistory::act(Session& sess) {
     complete();
     sess.addActionToLog(this);
 }
-std::string PrintWatchHistory::toString() const {}
+std::string PrintWatchHistory::toString() const {
+    if (this->getStatus() == ERROR)
+        cout<< "ERROR: " << this->getErrorMsg() << endl;
+    else if (this->getStatus() == COMPLETED)
+        cout<< "watchhist COMPLETED" << endl;
+    else
+        cout<< "unkown error" <<endl;
+}
 
 
 //Print actions log
 PrintActionsLog::PrintActionsLog() = default;
 void PrintActionsLog::act(Session& sess) {
     vector<BaseAction *> action = sess.getActionLog();
-    for (auto & i : action)
+    for (const auto & i : action)
     {
-        cout << i->toString();
+        i->toString();
     }
     complete();
     sess.addActionToLog(this);
 }
-std::string PrintActionsLog::toString() const {}
+std::string PrintActionsLog::toString() const {
+    if (this->getStatus() == ERROR)
+        cout<< "ERROR: " << this->getErrorMsg() << endl;
+    else if (this->getStatus() == COMPLETED)
+        cout<< "log COMPLETED" << endl;
+    else
+        cout<< "unkown error" <<endl;
+}
 
 
 //Watch
@@ -236,7 +259,9 @@ void Watch::act(Session& sess) {
 
     if (sess.getSomethingToWatch(idToWatch) == nullptr) {
         this->error("content with this id doesnt exist");
-    } else {
+        sess.addActionToLog(this);
+    }
+     else {
         sess.nowPlaying = idToWatch;
         cout << "Watching " << sess.getSomethingToWatch(idToWatch)->toString() << endl;
         complete();
@@ -275,12 +300,27 @@ void Watch::act(Session& sess) {
     }
     // this->toString();
 }
-std::string Watch::toString() const {}
+std::string Watch::toString() const {
+    if (this->getStatus() == ERROR)
+        cout<< "ERROR: " << this->getErrorMsg() << endl;
+    else if (this->getStatus() == COMPLETED)
+        cout<< "watch COMPLETED" << endl;
+    else
+        cout<< "unkown error" <<endl;
+}
 
 
 //Exit
 Exit::Exit() = default;
 void Exit::act(Session& sess) {
     sess.setTerminate("false");
+    sess.addActionToLog(this);
 }
-std::string Exit::toString() const {}
+std::string Exit::toString() const {
+    if (this->getStatus() == ERROR)
+        cout<< "ERROR: " << this->getErrorMsg() << endl;
+    else if (this->getStatus() == COMPLETED)
+        cout<< "exit COMPLETED" << endl;
+    else
+        cout<< "unkown error" <<endl;
+}
