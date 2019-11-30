@@ -16,6 +16,35 @@
 //User
 User::User(std::string name) : name(std::move(name)) {}
 
+User::User(const User &other) {
+    copy(other);
+}
+
+User::~User() {
+    clean();
+}
+
+void User::copy(const User& other) {
+    this->name = other.name;
+    for (int i=0; i<other.history.size(); i++)
+    {
+        this->history.push_back(other.history[i]);
+    }
+}
+
+class User & User::operator=(const class User & other) {
+    if (&other != this)
+    {
+        this->clean();
+        this->copy(other);
+    }
+    return *this;
+}
+
+void User::clean() {
+    this->history.clear();
+}
+
 std::vector<Watchable*> User::get_history() const {return this->history;}
 
 std::string User::getName() const { return this->name; }
@@ -111,6 +140,8 @@ User* LengthRecommenderUser::toDuplicate(const std::string &newName, const User 
     }
     return newUser;
 }
+LengthRecommenderUser::LengthRecommenderUser(const LengthRecommenderUser &other) : User(other){}
+
 
 //----------------Rerun recommender----------------
 RerunRecommenderUser::RerunRecommenderUser(const std::string &name) :User(name){}
@@ -142,6 +173,8 @@ User* RerunRecommenderUser::toDuplicate(const std::string &newName, const User &
     }
     return newUser;
 }
+RerunRecommenderUser::RerunRecommenderUser(const RerunRecommenderUser &other) : User(other){}
+
 
 //----------------Genre recommender----------------
 GenreRecommenderUser::GenreRecommenderUser(const std::string &name) :User(name){}
@@ -228,3 +261,4 @@ User* GenreRecommenderUser::toDuplicate(const std::string &newName, const User &
     }
     return newUser;
 }
+GenreRecommenderUser::GenreRecommenderUser(const GenreRecommenderUser &other) : User(other){}

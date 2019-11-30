@@ -15,9 +15,9 @@ public:
     virtual ~Watchable(); //destructor
     virtual void clean();
     virtual void copy(const Watchable& other);
+    virtual Watchable* dupWacthable() = 0;
     virtual std::string toString() const = 0;
     virtual Watchable* getNextWatchable(Session&) const = 0;
-
     long getId();
     int getLength();
     std::vector<std::string> getTags();
@@ -38,6 +38,8 @@ public:
     virtual std::string toString() const;
     virtual Watchable* getNextWatchable(Session&) const;
     std::string getName();
+    virtual Movie* dupWacthable();
+
 private:
     std::string name;
 };
@@ -58,6 +60,8 @@ public:
     int getEpisode();
     long getNextEpisodeId();
     void setNextEpisodeId(long currEpisodeId);
+    virtual Episode* dupWacthable();
+
 private:
     std::string seriesName;
     int season;

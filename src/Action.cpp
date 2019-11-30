@@ -18,8 +18,21 @@ void BaseAction::error(const std::string &errorMsg) {
 std::string BaseAction::getErrorMsg() const { return errorMsg;} //" Error: %n", errorMsg; }
 
 
+BaseAction::BaseAction(const BaseAction &ba) : errorMsg(ba.errorMsg), status(ba.status){}
+BaseAction & BaseAction::operator=(const class BaseAction & other) {
+    if (&other != this)
+    {
+       this->status = other.status;
+       this->errorMsg = other.errorMsg;
+    }
+    return *this;
+}
+BaseAction:: ~BaseAction() {}
+
+
 //-----Create user------
 CreateUser::CreateUser () = default;
+CreateUser::CreateUser(const CreateUser &other) : BaseAction(other) {}
 void CreateUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
     std::string reco = userInput.substr(userInput.length()-3);
@@ -57,10 +70,15 @@ std::string CreateUser::toString() const {
         cout<< "unkown error" <<endl;
     return "";
 }
+CreateUser* CreateUser::dupAction() {
+    CreateUser *newCa = new CreateUser(*this);
+    return newCa;
+}
 
 
 //------Change active user-----
 ChangeActiveUser::ChangeActiveUser () = default;
+ChangeActiveUser::ChangeActiveUser(const ChangeActiveUser &other) : BaseAction(other){}
 void ChangeActiveUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
     std::string changedUser = userInput.substr(userInput.find(' ')+1);
@@ -85,10 +103,15 @@ std::string ChangeActiveUser::toString() const {
     else
         cout<< "unkown error" <<endl;
 }
+ChangeActiveUser* ChangeActiveUser::dupAction() {
+    ChangeActiveUser *newChu = new ChangeActiveUser(*this);
+    return  newChu;
+}
 
 
 //------Delete user------
 DeleteUser::DeleteUser() = default;
+DeleteUser::DeleteUser(const DeleteUser &other) : BaseAction(other){}
 void DeleteUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
     std::string userToDelete = userInput.substr(userInput.find(' ')+1);
@@ -113,10 +136,15 @@ std::string DeleteUser::toString() const {
     else
         cout<< "unkown error" <<endl;
 }
+DeleteUser* DeleteUser::dupAction() {
+    DeleteUser *newDu = new DeleteUser(*this);
+    return newDu;
+}
 
 
 //------Duplicate user------
 DuplicateUser::DuplicateUser() = default;
+DuplicateUser::DuplicateUser(const DuplicateUser &other) : BaseAction(other) {}
 void DuplicateUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
     int count = 0;
@@ -165,10 +193,15 @@ std::string DuplicateUser::toString() const {
     else
         cout<< "unkown error" <<endl;
 }
+DuplicateUser * DuplicateUser::dupAction() {
+    DuplicateUser *newDu = new DuplicateUser(*this);
+    return newDu;
+}
 
 
 //------Print content list------
 PrintContentList::PrintContentList() = default;
+PrintContentList::PrintContentList(const PrintContentList &other) : BaseAction(other){}
 void PrintContentList::act(Session& sess) {
 
     vector<Watchable *> contentList = sess.getContent();
@@ -197,10 +230,15 @@ std::string PrintContentList::toString() const {
     else
         cout<< "unkown error" <<endl;
 }
+PrintContentList * PrintContentList::dupAction() {
+    PrintContentList *newPcl = new PrintContentList(*this);
+    return newPcl;
+}
 
 
 //-----Print watch history-----
 PrintWatchHistory::PrintWatchHistory() = default;
+PrintWatchHistory::PrintWatchHistory(const PrintWatchHistory &other) : BaseAction(other){}
 void PrintWatchHistory::act(Session& sess) {
     string name = sess.getActiveUser()->getName();
     cout << "Watch history for " << name << endl;
@@ -228,10 +266,15 @@ std::string PrintWatchHistory::toString() const {
     else
         cout<< "unkown error" <<endl;
 }
+PrintWatchHistory * PrintWatchHistory::dupAction() {
+    PrintWatchHistory *newPwh = new PrintWatchHistory(*this);
+    return newPwh;
+}
 
 
 //-----Print actions log------
 PrintActionsLog::PrintActionsLog() = default;
+PrintActionsLog::PrintActionsLog(const PrintActionsLog &other) : BaseAction(other) {}
 void PrintActionsLog::act(Session& sess) {
     vector<BaseAction *> action = sess.getActionLog();
     for (const auto & i : action)
@@ -249,10 +292,15 @@ std::string PrintActionsLog::toString() const {
     else
         cout<< "unkown error" <<endl;
 }
+PrintActionsLog * PrintActionsLog::dupAction() {
+    PrintActionsLog *newPal = new PrintActionsLog(*this);
+    return newPal;
+}
 
 
 //-----Watch------
 Watch::Watch() = default;
+Watch::Watch(const Watch &other) : BaseAction(other){}
 void Watch::act(Session& sess) {
 
     std::string userInput = sess.getSessionInput();
@@ -309,10 +357,15 @@ std::string Watch::toString() const {
     else
         cout<< "unkown error" <<endl;
 }
+Watch * Watch::dupAction() {
+    Watch *newW = new Watch(*this);
+    return newW;
+}
 
 
 //------Exit------
 Exit::Exit() = default;
+Exit::Exit(const Exit &other) : BaseAction(other){}
 void Exit::act(Session& sess) {
     sess.setTerminate("false");
     sess.addActionToLog(this);
@@ -324,4 +377,8 @@ std::string Exit::toString() const {
         cout<< "exit COMPLETED" << endl;
     else
         cout<< "unkown error" <<endl;
+}
+class Exit * Exit::dupAction() {
+    Exit *newE = new Exit(*this);
+    return newE;
 }

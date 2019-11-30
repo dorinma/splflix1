@@ -92,7 +92,7 @@ Session& Session::operator=(const Session &other) {
     return *this;
 }
 
-//----------move assignment
+//----------move assignment operator--------
 class Session & Session::operator=(const class Session && other) {
 
 }
@@ -103,13 +103,13 @@ void Session :: clean() {
     }
     this->content.clear();
 
-    delete(activeUser);
-    this->activeUser = nullptr;
+    //delete(activeUser);
 
     for(const auto elem : userMap) {
-        delete elem.second;
+        delete(elem.second);
     }
     this->userMap.clear();
+    this->activeUser = nullptr;
 
     for(BaseAction *action : actionsLog) {
         delete action;
@@ -119,19 +119,29 @@ void Session :: clean() {
 
 void Session::copy(const class Session & other) {
 
-    this->content = other.content;
+    for(int i=0; i<other.content.size(); i++)
+    {
+        Watchable *newWatchable = other.content[i]->dupWacthable();
+        this->content.push_back(newWatchable);
+    }
+
+    //this->content = other.content;
     for(int i=0; i<other.actionsLog.size(); i++)
     {
-        this->actionsLog.at(i) = other.actionsLog.at(i);
+        BaseAction *newAction = other.actionsLog[i]->dupAction();
+        this->actionsLog.push_back(newAction);
     }
    // this->actionsLog = other.actionsLog;
     for(const auto& elem : other.userMap)
     {
-        this->userMap.insert({elem.first, elem.second});
-        this->userMap[elem.first] = elem.second;
+        User *newUser = elem.second->toDuplicate(elem.first, *elem.second);
+        this->userMap.insert({newUser->getName(), newUser});
+
+        if (other.activeUser->getName() == newUser->getName())
+            this->activeUser = newUser;
     }
     //this->userMap = other.userMap;
-    this->activeUser = other.activeUser;
+    //this->activeUser = other.activeUser;
     this->sessionInput = other.sessionInput;
     this->terminate = other.terminate;
 }
@@ -193,6 +203,7 @@ void Session :: start() {
     cout << "SPLFLIX is now on!" << endl;
     bool validInput = true;
 
+    terminate = false;
     while (!this->terminate){
         validInput = true;
         std::string input;
