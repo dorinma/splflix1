@@ -51,7 +51,11 @@ void CreateUser::act(Session& sess) {
         if (reco == "len") { newUser = new LengthRecommenderUser(name); }
         else if (reco == "rer") { newUser = new RerunRecommenderUser(name); }
         else if (reco == "gen") { newUser = new GenreRecommenderUser(name); }
-        else { this->error("wrong recommend was typed"); }
+        else
+            {
+            this->error("wrong recommend was typed");
+            sess.addActionToLog(this);
+            }
 
         if (getStatus() != ERROR) {
             complete();
