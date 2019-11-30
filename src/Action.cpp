@@ -18,7 +18,7 @@ void BaseAction::error(const std::string &errorMsg) {
 std::string BaseAction::getErrorMsg() const { return errorMsg;} //" Error: %n", errorMsg; }
 
 
-//-----Create user------ //DONEEEE
+//-----Create user------
 CreateUser::CreateUser () = default;
 void CreateUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
@@ -59,7 +59,7 @@ std::string CreateUser::toString() const {
 }
 
 
-//------Change active user----- ////DONEEEEEE
+//------Change active user-----
 ChangeActiveUser::ChangeActiveUser () = default;
 void ChangeActiveUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
@@ -87,7 +87,7 @@ std::string ChangeActiveUser::toString() const {
 }
 
 
-//------Delete user------ //DONEEEEE
+//------Delete user------
 DeleteUser::DeleteUser() = default;
 void DeleteUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
@@ -115,7 +115,7 @@ std::string DeleteUser::toString() const {
 }
 
 
-//Duplicate user
+//------Duplicate user------
 DuplicateUser::DuplicateUser() = default;
 void DuplicateUser::act(Session& sess) {
     std::string userInput = sess.getSessionInput();
@@ -167,7 +167,7 @@ std::string DuplicateUser::toString() const {
 }
 
 
-//Print content list
+//------Print content list------
 PrintContentList::PrintContentList() = default;
 void PrintContentList::act(Session& sess) {
 
@@ -199,7 +199,7 @@ std::string PrintContentList::toString() const {
 }
 
 
-//Print watch history
+//-----Print watch history-----
 PrintWatchHistory::PrintWatchHistory() = default;
 void PrintWatchHistory::act(Session& sess) {
     string name = sess.getActiveUser()->getName();
@@ -230,7 +230,7 @@ std::string PrintWatchHistory::toString() const {
 }
 
 
-//Print actions log
+//-----Print actions log------
 PrintActionsLog::PrintActionsLog() = default;
 void PrintActionsLog::act(Session& sess) {
     vector<BaseAction *> action = sess.getActionLog();
@@ -251,7 +251,7 @@ std::string PrintActionsLog::toString() const {
 }
 
 
-//Watch
+//-----Watch------
 Watch::Watch() = default;
 void Watch::act(Session& sess) {
 
@@ -263,7 +263,7 @@ void Watch::act(Session& sess) {
         sess.addActionToLog(this);
     }
      else {
-        sess.nowPlaying = idToWatch;
+        //sess.nowPlaying = idToWatch;
         cout << "Watching " << sess.getSomethingToWatch(idToWatch)->toString() << endl;
         complete();
         sess.addToHistory(sess.getSomethingToWatch(idToWatch));
@@ -283,7 +283,7 @@ void Watch::act(Session& sess) {
 
             stringstream ss;
             ss << nextId;
-            sess.nowPlaying = ss.str();
+            //sess.nowPlaying = ss.str();
 
             complete();
             sess.addToHistory(nextWatchable);
@@ -311,7 +311,7 @@ std::string Watch::toString() const {
 }
 
 
-//Exit
+//------Exit------
 Exit::Exit() = default;
 void Exit::act(Session& sess) {
     sess.setTerminate("false");

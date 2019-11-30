@@ -12,12 +12,14 @@ class Watchable;
 class Session{
 public:
     Session(const std::string &configFilePath);
-    std::string nowPlaying;
+   // std::string nowPlaying;
     ~Session();
     Session(const Session &other);
     Session& operator=(const Session& other);
+    Session& operator=(const Session &&other);
     void start();
     void clean();
+    void copy(const Session &other);
     std::string getSessionInput();
     std::unordered_map<std::string, User*> getUserMap();
     User* getUserByString(const std::string &name);

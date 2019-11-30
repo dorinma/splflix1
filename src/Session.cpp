@@ -74,18 +74,36 @@ Session :: Session(const std::string &configFilePath){
 
 //----------destructor----------
 Session :: ~Session(){
-/*        std::vector<Watchable*> content; ----deleted
-    std::vector<BaseAction*> actionsLog; ----deleted
-    std::unordered_map<std::string,User*> userMap; ----deleted
-    User* activeUser; ----deleted
-    std::string sessionInput; ----std::string and not a pointer so no need to destruct
-    */
+    clean();
+}
 
+//----------copy constructor----------
+Session :: Session(const Session &other) {
+    copy(other);
+}
+
+//----------copy assignment operator----------
+Session& Session::operator=(const Session &other) {
+    if (&other != this)
+    {
+        this->clean();
+        this->copy(other);
+    }
+    return *this;
+}
+
+//----------move assignment
+class Session & Session::operator=(const class Session && other) {
+
+}
+
+void Session :: clean() {
     for(Watchable *watch : content) {
         delete watch;
     }
     this->content.clear();
 
+    delete(activeUser);
     this->activeUser = nullptr;
 
     for(const auto elem : userMap) {
@@ -99,36 +117,24 @@ Session :: ~Session(){
     this->actionsLog.clear();
 }
 
-//----------copy constructor----------
-Session :: Session(const Session &other) {
-    /*        std::vector<Watchable*> content; ----deleted
-    std::vector<BaseAction*> actionsLog; ----deleted
-    std::unordered_map<std::string,User*> userMap; ----deleted
-    User* activeUser; ----deleted
-    std::string sessionInput; ----std::string and not a pointer so no need to destruct
-    */
+void Session::copy(const class Session & other) {
 
-    //TODO : do i need to create vectors and push back the content or is this enough?
     this->content = other.content;
-    this->actionsLog = other.actionsLog;
-    this->userMap = other.userMap;
+    for(int i=0; i<other.actionsLog.size(); i++)
+    {
+        this->actionsLog.at(i) = other.actionsLog.at(i);
+    }
+   // this->actionsLog = other.actionsLog;
+    for(const auto& elem : other.userMap)
+    {
+        this->userMap.insert({elem.first, elem.second});
+        this->userMap[elem.first] = elem.second;
+    }
+    //this->userMap = other.userMap;
     this->activeUser = other.activeUser;
     this->sessionInput = other.sessionInput;
+    this->terminate = other.terminate;
 }
-
-//----------copy assignment operator----------
-Session& Session::operator=(const Session &other) {
-
-    //TODO : do i need to create vectors and push back the content or is this enough?
-    this->content = other.content;
-    this->actionsLog = other.actionsLog;
-    this->userMap = other.userMap;
-    this->activeUser = other.activeUser;
-    this->sessionInput = other.sessionInput;
-    return *this;
-}
-
-void Session :: clean() {} //TODO : implement?
 
 std::string Session::getSessionInput() {return this->sessionInput;}
 
@@ -158,7 +164,10 @@ void Session::setActiveUser(User *user) {this->activeUser = user;}
 
 void Session::setTerminate(bool toContinue) {this->terminate=toContinue;}
 
-void Session::deleteUserFromMap(const std::string &name) {this->userMap.erase(name);}
+void Session::deleteUserFromMap(const std::string &name) {
+    delete(userMap.at(name));
+    this->userMap.erase(name);
+}
 
 std::vector<Watchable*> Session::getContent() { return content; }
 
