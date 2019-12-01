@@ -12,11 +12,11 @@ class Watchable;
 class Session{
 public:
     Session(const std::string &configFilePath);
-   // std::string nowPlaying;
     ~Session();
-    Session(const Session &other);
-    Session& operator=(const Session& other);
-    Session& operator=(const Session &&other);
+    Session(const Session &other); //copy
+    Session& operator=(const Session& other); //copy ass
+    Session(Session &&other); //move
+    Session& operator=(Session &&other); //move ass
     void start();
     void clean();
     void copy(const Session &other);

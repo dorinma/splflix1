@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_set>
 #include <unordered_map>
+#include "Watchable.h"
 
 class Watchable;
 class Session;
@@ -23,6 +24,8 @@ public:
     void setToHistory (Watchable *watched);
     void setUserName(std::string newName);
     virtual User* toDuplicate(const std::string &newName, const User &oldUser) =0;
+    void setHistory(std::vector<Watchable*> w);
+
 protected:
     std::vector<Watchable*> history;
 private:
@@ -57,7 +60,7 @@ public:
     GenreRecommenderUser(const GenreRecommenderUser& other);
     virtual Watchable* getRecommendation(Session& s);
     User* toDuplicate(const std::string &newName, const User &oldUser);
-    //virtual GenreRecommenderUser& operator=(const GenreRecommenderUser& other);
+    // virtual GenreRecommenderUser& operator=(const GenreRecommenderUser& other);
 private:
 };
 

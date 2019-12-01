@@ -8,14 +8,14 @@
 using namespace std;
 
 //-----BaseAction------
-BaseAction::BaseAction() = default;
+BaseAction::BaseAction() : errorMsg(""), status(PENDING) {};
 ActionStatus BaseAction::getStatus() const { return this->status; };
 void BaseAction::complete() { this->status = COMPLETED; }
-void BaseAction::error(const std::string &errorMsg) {
+void BaseAction::error(const std::string &errorMsg)  {
     status = ERROR;
     this->errorMsg = errorMsg;
 }
-std::string BaseAction::getErrorMsg() const { return errorMsg;} //" Error: %n", errorMsg; }
+std::string BaseAction::getErrorMsg() const { return errorMsg;}
 
 
 BaseAction::BaseAction(const BaseAction &ba) : errorMsg(ba.errorMsg), status(ba.status){}
@@ -63,7 +63,7 @@ void CreateUser::act(Session& sess) {
             sess.addActionToLog(this);
         }
     }
-    this->toString();
+    //this->toString();
 }
 std::string CreateUser::toString() const {
     if (this->getStatus() == ERROR)
@@ -107,6 +107,8 @@ std::string ChangeActiveUser::toString() const {
         cout<< "changeuser COMPLETED" << endl;
     else
         cout<< "unkown error" <<endl;
+
+    return "";
 }
 ChangeActiveUser* ChangeActiveUser::dupAction() {
     ChangeActiveUser *newChu = new ChangeActiveUser(*this);
@@ -132,7 +134,7 @@ void DeleteUser::act(Session& sess) {
         complete();
         sess.addActionToLog(this);
     }
-    this->toString();
+   // this->toString();
 }
 std::string DeleteUser::toString() const {
     if (this->getStatus() == ERROR)
@@ -141,6 +143,7 @@ std::string DeleteUser::toString() const {
         cout<< "deleteuser COMPLETED" << endl;
     else
         cout<< "unkown error" <<endl;
+    return "";
 }
 DeleteUser* DeleteUser::dupAction() {
     DeleteUser *newDu = new DeleteUser(*this);
@@ -191,7 +194,7 @@ void DuplicateUser::act(Session& sess) {
         complete();
         sess.addActionToLog(this);
     }
-    this->toString();
+    //this->toString();
 }
 std::string DuplicateUser::toString() const {
     if (this->getStatus() == ERROR)
@@ -200,7 +203,9 @@ std::string DuplicateUser::toString() const {
         cout<< "dupuser COMPLETED" << endl;
     else
         cout<< "unkown error" <<endl;
+    return "";
 }
+
 DuplicateUser * DuplicateUser::dupAction() {
     DuplicateUser *newDu = new DuplicateUser(*this);
     return newDu;
@@ -239,6 +244,7 @@ std::string PrintContentList::toString() const {
         cout<< "content COMPLETED" << endl;
     else
         cout<< "unkown error" <<endl;
+    return "";
 }
 PrintContentList * PrintContentList::dupAction() {
     PrintContentList *newPcl = new PrintContentList(*this);
@@ -257,6 +263,7 @@ void PrintWatchHistory::act(Session& sess) {
     vector<Watchable *> history = sess.getActiveUser()->get_history();
     if (history.empty()) {
         cout << ("nothing was watched. you need to stop studying") << endl;
+        complete();
         sess.addActionToLog(this);
     }
     else {
@@ -277,6 +284,7 @@ std::string PrintWatchHistory::toString() const {
         cout<< "watchhist COMPLETED" << endl;
     else
         cout<< "unkown error" <<endl;
+    return "";
 }
 PrintWatchHistory * PrintWatchHistory::dupAction() {
     PrintWatchHistory *newPwh = new PrintWatchHistory(*this);
@@ -305,6 +313,7 @@ std::string PrintActionsLog::toString() const {
         cout<< "log COMPLETED" << endl;
     else
         cout<< "unkown error" <<endl;
+    return "";
 }
 PrintActionsLog * PrintActionsLog::dupAction() {
     PrintActionsLog *newPal = new PrintActionsLog(*this);
@@ -327,7 +336,6 @@ void Watch::act(Session& sess) {
         sess.addActionToLog(this);
     }
      else {
-        //sess.nowPlaying = idToWatch;
         cout << "Watching " << sess.getSomethingToWatch(idToWatch)->toString() << endl;
         complete();
         sess.addToHistory(sess.getSomethingToWatch(idToWatch));
@@ -347,7 +355,6 @@ void Watch::act(Session& sess) {
 
             stringstream ss;
             ss << nextId;
-            //sess.nowPlaying = ss.str();
 
             complete();
             sess.addToHistory(nextWatchable);
@@ -365,7 +372,6 @@ void Watch::act(Session& sess) {
             }
         }
     }
-    // this->toString();
 }
 std::string Watch::toString() const {
     if (this->getStatus() == ERROR)
@@ -374,6 +380,7 @@ std::string Watch::toString() const {
         cout<< "watch COMPLETED" << endl;
     else
         cout<< "unkown error" <<endl;
+    return "";
 }
 Watch * Watch::dupAction() {
     Watch *newW = new Watch(*this);
@@ -387,6 +394,7 @@ Exit::Exit() = default;
 Exit::Exit(const Exit &other) : BaseAction(other){}
 void Exit::act(Session& sess) {
     sess.setTerminate("false");
+    complete();
     sess.addActionToLog(this);
 }
 std::string Exit::toString() const {
@@ -396,6 +404,7 @@ std::string Exit::toString() const {
         cout<< "exit COMPLETED" << endl;
     else
         cout<< "unkown error" <<endl;
+    return "";
 }
 Exit* Exit::dupAction() {
     Exit *newE = new Exit(*this);

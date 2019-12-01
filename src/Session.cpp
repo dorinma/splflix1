@@ -16,7 +16,7 @@ using json = nlohmann :: json;
 //copy assignment operator
 //move assignment operator
 
-Session :: Session(const std::string &configFilePath){
+Session :: Session(const std::string &configFilePath) : content(), actionsLog(), userMap(), activeUser(), sessionInput(){
     //read the json file
 
     nlohmann::json j;
@@ -55,7 +55,7 @@ Session :: Session(const std::string &configFilePath){
         for (int s = 0; s <= seasons; s++) {
             for (int e = 1; e <= j["tv_series"][k]["seasons"][s]; e++) {
                 Episode *episode = new Episode(i + 1, j["tv_series"][k]["name"],j["tv_series"][k]["episode_length"],s+1, e, tags);
-                if(s == seasons & e == j["tv_series"][k]["seasons"][s]) //if we're at the last episode
+                if((s == seasons) & (e == j["tv_series"][k]["seasons"][s])) //if we're at the last episode
                     episode->setNextEpisodeId(0);
                 else
                     episode->setNextEpisodeId(i + 2);
@@ -78,7 +78,7 @@ Session :: ~Session(){
 }
 
 //----------copy constructor----------
-Session :: Session(const Session &other) {
+Session :: Session(const Session &other) : content(), actionsLog(), userMap(), activeUser(), sessionInput() {
     copy(other);
 }
 
@@ -92,25 +92,98 @@ Session& Session::operator=(const Session &other) {
     return *this;
 }
 
-//----------move assignment operator--------
-class Session & Session::operator=(const class Session && other) {
+//----------move constructor--------
+Session::Session(Session &&other) : content(), actionsLog(), userMap(), activeUser(), sessionInput() {
+    for(Watchable *w : other.content){
+        this->content.push_back(w);
+        w = nullptr;
+    }
+    other.content.clear();
 
+    for(BaseAction *b : other.actionsLog){
+        this->actionsLog.push_back(b);
+        b = nullptr;
+    }
+    other.actionsLog.clear();
+
+    this->activeUser = other.activeUser;
+
+    for(auto& elem : other.userMap) {
+        this->userMap.insert({elem.first, elem.second});
+        for(size_t i=0; i<elem.second->get_history().size(); i++)
+        {
+            elem.second->get_history().at(i) = nullptr;
+        }
+        elem.second = nullptr;
+    }
+    other.userMap.clear();
+
+    other.activeUser = nullptr;
+
+    this->sessionInput = other.sessionInput;
+
+    this->terminate = other.terminate;
+}
+
+
+//----------move assignment operator--------
+class Session & Session::operator=(Session && other) {
+    if(&other != this) {
+        clean();
+
+        for(Watchable *w : other.content){
+            this->content.push_back(w);
+            w = nullptr;
+        }
+        other.content.clear();
+
+        for(BaseAction *b : other.actionsLog){
+            this->actionsLog.push_back(b);
+            b = nullptr;
+        }
+        other.actionsLog.clear();
+
+        this->activeUser = other.activeUser;
+
+        for(auto& elem : other.userMap) {
+            this->userMap.insert({elem.first, elem.second});
+
+/*            for(size_t i=0; i<elem.second->get_history().size(); i++)
+            {
+                elem.second->get_history().at(i) = nullptr;
+            }
+*/
+            elem.second = nullptr;
+        }
+        other.userMap.clear();
+
+        other.activeUser = nullptr;
+
+        this->sessionInput = other.sessionInput;
+
+        this->terminate = other.terminate;
+    }
+    return *this;
 }
 
 void Session :: clean() {
+
+    for(const auto elem : userMap) {
+      /*  for(size_t i=0; i<elem.second->get_history().size(); i++)
+        {
+            //delete elem.second->get_history().at(i);
+            elem.second->get_history().at(i) = nullptr;
+        }*/
+        delete(elem.second);
+    }
+    this->activeUser = nullptr;
+
     for(Watchable *watch : content) {
         delete watch;
     }
     this->content.clear();
 
-    //delete(activeUser);
-
-    for(const auto elem : userMap) {
-        cout << "deleting " << elem.first << endl;
-        delete(elem.second);
-    }
     this->userMap.clear();
-    this->activeUser = nullptr;
 
     for(BaseAction *action : actionsLog) {
         delete action;
@@ -120,29 +193,41 @@ void Session :: clean() {
 
 void Session::copy(const class Session & other) {
 
-    for(int i=0; i<other.content.size(); i++)
+    for(int i=0; i<(int)other.content.size(); i++)
     {
         Watchable *newWatchable = other.content[i]->dupWacthable();
         this->content.push_back(newWatchable);
     }
 
-    //this->content = other.content;
-    for(int i=0; i<other.actionsLog.size(); i++)
+    for(int i=0; i<(int)other.actionsLog.size(); i++)
     {
         BaseAction *newAction = other.actionsLog[i]->dupAction();
         this->actionsLog.push_back(newAction);
     }
-   // this->actionsLog = other.actionsLog;
+
     for(const auto& elem : other.userMap)
     {
         User *newUser = elem.second->toDuplicate(elem.first, *elem.second);
-        this->userMap.insert({newUser->getName(), newUser});
 
         if (other.activeUser->getName() == newUser->getName())
             this->activeUser = newUser;
+
+        std::vector<Watchable*> newHistory;
+
+        for(size_t i=0; i<elem.second->get_history().size(); i++)
+        {
+            int id = elem.second->get_history()[i]->getId();
+            stringstream ss;
+            ss << id;
+            string idString = ss.str();
+            newUser->get_history().clear();
+            Watchable *save = getSomethingToWatch(idString);
+            newHistory.push_back(save);
+        }
+        newUser->setHistory(newHistory);
+
+        this->userMap.insert({newUser->getName(), newUser});
     }
-    //this->userMap = other.userMap;
-    //this->activeUser = other.activeUser;
     this->sessionInput = other.sessionInput;
     this->terminate = other.terminate;
 }
@@ -197,6 +282,7 @@ Watchable* Session::getSomethingToWatch(const std::string &id) {
             toWatch = elem;
     }
     return toWatch;}
+
 
 
 void Session :: start() {

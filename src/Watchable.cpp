@@ -9,7 +9,7 @@ using namespace std;
 Watchable :: Watchable(long id, int length, std::vector<std::string>  tags) : id(id), length(length), tags(std::move(tags)) {}
 
 //copy constructor
-Watchable :: Watchable(const Watchable& other) : id(other.id) {
+Watchable :: Watchable(const Watchable& other) : id(other.id) , length(), tags(){
     copy(other);
 }
 
@@ -25,7 +25,7 @@ Watchable &Watchable :: operator=(const Watchable& other){
 
 //destructor
 Watchable :: ~Watchable(){
-    clean();
+   // clean();
 }
 
 //getters
@@ -35,8 +35,9 @@ std::vector<std::string> Watchable :: getTags() { return tags; }
 
 //class methods
 void Watchable :: clean() {
-    tags.clear();
+    //tags.clear();
 }
+
 void Watchable :: copy(const Watchable& other){
     this -> length = other.length;
     for (const auto & tag : other.tags) {
@@ -44,7 +45,7 @@ void Watchable :: copy(const Watchable& other){
     }
 }
 
-Watchable* Watchable::getNextWatchable(Session &) const {}
+Watchable* Watchable::getNextWatchable(Session &) const { return nullptr; }
 
 //__________________________________________________________________________
 //MOVIE
@@ -68,7 +69,7 @@ Movie &Movie :: operator=(const Movie& other){
 
 //destructor
 Movie :: ~Movie(){
-    clean();
+   // clean();
 }
 
 //Class Methods
@@ -97,12 +98,11 @@ Movie* Movie::dupWacthable() {
 
 //constructor
 Episode :: Episode(long id, const std::string& seriesName,int length, int season, int episode ,const std::vector<std::string>& tags)
-        : Watchable(id, length, tags), seriesName(seriesName), episode(episode), season(season){
+        : Watchable(id, length, tags), seriesName(seriesName), season(season), episode(episode), nextEpisodeId(){
 }
 
 //copy constructor
-Episode :: Episode(const Episode& other) : Watchable(other), seriesName(other.seriesName), episode(other.episode),
-                                            season(other.season){}
+Episode :: Episode(const Episode& other) : Watchable(other), seriesName(other.seriesName),season(other.season), episode(other.episode), nextEpisodeId(){}
 
 //copy assignment operator
 Episode &Episode :: operator=(const Episode& other) {
@@ -115,7 +115,7 @@ Episode &Episode :: operator=(const Episode& other) {
 
 //destructor
 Episode :: ~Episode(){
-    clean();
+ //   clean();
 }
 
 void Episode :: clean(){}
@@ -158,6 +158,6 @@ void Episode::setNextEpisodeId(long next) {
 }
 
 class Episode * Episode::dupWacthable() {
-    Episode *newEpisode = new Episode(*this);
+    Episode *newEpisode = new Episode(*this); //TODO not working
     return newEpisode;
 }

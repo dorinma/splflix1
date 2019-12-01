@@ -27,7 +27,7 @@ protected:
 	std::string getErrorMsg() const;
 private:
 	std::string errorMsg;
-	ActionStatus status = PENDING;
+	ActionStatus status;
 };
 
 class CreateUser  : public BaseAction {
