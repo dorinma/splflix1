@@ -98,7 +98,7 @@ void ChangeActiveUser::act(Session& sess) {
         complete();
         sess.addActionToLog(this);
     }
-    this->toString();
+    //this->toString();
 }
 std::string ChangeActiveUser::toString() const {
     if (this->getStatus() == ERROR)
@@ -352,6 +352,7 @@ void Watch::act(Session& sess) {
             complete();
             sess.addToHistory(nextWatchable);
             Watch *watching = new Watch();
+            watching->complete();
             sess.addActionToLog(watching);
 
             nextWatchable = sess.getActiveUser()->getRecommendation(sess);

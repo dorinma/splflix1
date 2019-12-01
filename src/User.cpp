@@ -14,7 +14,10 @@
 
 
 //User
-User::User(std::string name) : name(std::move(name)) {}
+User::User(std::string name) : name(std::move(name)) {
+   // std::cout << "user " << name << " created" << std::endl;
+
+}
 
 User::User(const User &other) {
     copy(other);

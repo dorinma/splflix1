@@ -65,11 +65,11 @@ Session :: Session(const std::string &configFilePath){
         }
         k++;
 
-        //create default user
-        LengthRecommenderUser *defUser = new LengthRecommenderUser("default");
-        userMap.insert({"default", defUser});
-        this->activeUser = defUser;
     }
+    //create default user
+    LengthRecommenderUser *defUser = new LengthRecommenderUser("default");
+    userMap.insert({"default", defUser});
+    this->activeUser = defUser;
 }
 
 //----------destructor----------
@@ -106,6 +106,7 @@ void Session :: clean() {
     //delete(activeUser);
 
     for(const auto elem : userMap) {
+        cout << "deleting " << elem.first << endl;
         delete(elem.second);
     }
     this->userMap.clear();
