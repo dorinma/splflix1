@@ -27,7 +27,7 @@ BaseAction & BaseAction::operator=(const class BaseAction & other) {
     }
     return *this;
 }
-BaseAction:: ~BaseAction() {}
+BaseAction:: ~BaseAction() = default;
 
 
 //-----Create user------
@@ -78,6 +78,7 @@ CreateUser* CreateUser::dupAction() {
     CreateUser *newCa = new CreateUser(*this);
     return newCa;
 }
+CreateUser::~CreateUser() = default;
 
 
 //------Change active user-----
@@ -111,6 +112,7 @@ ChangeActiveUser* ChangeActiveUser::dupAction() {
     ChangeActiveUser *newChu = new ChangeActiveUser(*this);
     return  newChu;
 }
+ChangeActiveUser::~ChangeActiveUser() = default;
 
 
 //------Delete user------
@@ -144,6 +146,8 @@ DeleteUser* DeleteUser::dupAction() {
     DeleteUser *newDu = new DeleteUser(*this);
     return newDu;
 }
+DeleteUser::~DeleteUser() = default;
+
 
 
 //------Duplicate user------
@@ -201,6 +205,8 @@ DuplicateUser * DuplicateUser::dupAction() {
     DuplicateUser *newDu = new DuplicateUser(*this);
     return newDu;
 }
+DuplicateUser::~DuplicateUser() = default;
+
 
 
 //------Print content list------
@@ -238,6 +244,8 @@ PrintContentList * PrintContentList::dupAction() {
     PrintContentList *newPcl = new PrintContentList(*this);
     return newPcl;
 }
+PrintContentList::~PrintContentList() = default;
+
 
 
 //-----Print watch history-----
@@ -274,6 +282,8 @@ PrintWatchHistory * PrintWatchHistory::dupAction() {
     PrintWatchHistory *newPwh = new PrintWatchHistory(*this);
     return newPwh;
 }
+PrintWatchHistory::~PrintWatchHistory() = default;
+
 
 
 //-----Print actions log------
@@ -300,6 +310,8 @@ PrintActionsLog * PrintActionsLog::dupAction() {
     PrintActionsLog *newPal = new PrintActionsLog(*this);
     return newPal;
 }
+PrintActionsLog::~PrintActionsLog() = default;
+
 
 
 //-----Watch------
@@ -339,7 +351,8 @@ void Watch::act(Session& sess) {
 
             complete();
             sess.addToHistory(nextWatchable);
-            sess.addActionToLog(this);
+            Watch *watching = new Watch();
+            sess.addActionToLog(watching);
 
             nextWatchable = sess.getActiveUser()->getRecommendation(sess);
             cout << "We recommend watching " << nextWatchable->toString() << "continue watching? [y/n]" <<endl;
@@ -365,6 +378,7 @@ Watch * Watch::dupAction() {
     Watch *newW = new Watch(*this);
     return newW;
 }
+Watch::~Watch() = default;
 
 
 //------Exit------
@@ -382,7 +396,8 @@ std::string Exit::toString() const {
     else
         cout<< "unkown error" <<endl;
 }
-class Exit * Exit::dupAction() {
+Exit* Exit::dupAction() {
     Exit *newE = new Exit(*this);
     return newE;
 }
+Exit::~Exit() = default;
