@@ -13,17 +13,37 @@
 #include <algorithm>
 
 
-//Rule of 5!!!!!
-//copy constructor
-//move constructor
-//copy assignment operator
-//move assignment operator
-
-//TODO
-//rule of five??
-
 //User
 User::User(std::string name) : name(std::move(name)) {}
+
+User::User(const User &other) {
+    copy(other);
+}
+
+User::~User() {
+    clean();
+}
+
+void User::copy(const User& other) {
+    this->name = other.name;
+    for (int i=0; i<other.history.size(); i++)
+    {
+        this->history.push_back(other.history[i]);
+    }
+}
+
+class User & User::operator=(const class User & other) {
+    if (&other != this)
+    {
+        this->clean();
+        this->copy(other);
+    }
+    return *this;
+}
+
+void User::clean() {
+    this->history.clear();
+}
 
 std::vector<Watchable*> User::get_history() const {return this->history;}
 
@@ -33,6 +53,7 @@ void User::setUserName(std::string newName) { this->name = std::move(newName); }
 
 void User::setToHistory(Watchable *watched) { /////////NEW
     this->history.push_back(watched);
+
 }
 
 //----------------Length recommender----------------
@@ -110,6 +131,17 @@ Watchable* LengthRecommenderUser::getRecommendation(Session &s) {
         return output;
     }
 }
+User* LengthRecommenderUser::toDuplicate(const std::string &newName, const User &oldUser) {
+    User *newUser = new LengthRecommenderUser(newName);
+    std::vector<Watchable*> historyToCopy = oldUser.get_history();
+    for (int i=0; i<historyToCopy.size(); i++)
+    {
+        newUser->setToHistory(historyToCopy.at(i));
+    }
+    return newUser;
+}
+LengthRecommenderUser::LengthRecommenderUser(const LengthRecommenderUser &other) : User(other){}
+
 
 //----------------Rerun recommender----------------
 RerunRecommenderUser::RerunRecommenderUser(const std::string &name) :User(name){}
@@ -133,6 +165,16 @@ Watchable* RerunRecommenderUser::getRecommendation(Session &s) {
         return output;
     }
 }
+User* RerunRecommenderUser::toDuplicate(const std::string &newName, const User &oldUser) {
+    User *newUser = new RerunRecommenderUser(newName);
+    std::vector<Watchable *> historyToCopy = oldUser.get_history();
+    for (int i = 0; i < historyToCopy.size(); i++) {
+        newUser->setToHistory(historyToCopy.at(i));
+    }
+    return newUser;
+}
+RerunRecommenderUser::RerunRecommenderUser(const RerunRecommenderUser &other) : User(other){}
+
 
 //----------------Genre recommender----------------
 GenreRecommenderUser::GenreRecommenderUser(const std::string &name) :User(name){}
@@ -160,7 +202,7 @@ Watchable* GenreRecommenderUser::getRecommendation(Session &s) {
         for (const auto &elem : watchedGenres) {
             std::string watched = elem;
             bool found = false;
-            if (genresCounter.empty())//TODO --*
+            if (genresCounter.empty())
                 genresCounter.insert({watched, 1});
             else {
                 for (auto currGen : genresCounter) {
@@ -195,7 +237,6 @@ Watchable* GenreRecommenderUser::getRecommendation(Session &s) {
 
         //5. find the content we want to recommend the user, checking he hasn't watched it before
         for (const auto &currGen : popGens) {
-            //std::string currGen = elem1;//TODO
             for (const auto &elem2 : s.getContent()) {
                 Watchable *currContent = elem2;
                 if (std::find(history.begin(), history.end(), currContent) == history.end()) {
@@ -211,3 +252,13 @@ Watchable* GenreRecommenderUser::getRecommendation(Session &s) {
         return nullptr;
     }
 }
+User* GenreRecommenderUser::toDuplicate(const std::string &newName, const User &oldUser) {
+    User *newUser = new GenreRecommenderUser(newName);
+    std::vector<Watchable*> historyToCopy = oldUser.get_history();
+    for (int i=0; i<historyToCopy.size(); i++)
+    {
+        newUser->setToHistory(historyToCopy.at(i));
+    }
+    return newUser;
+}
+GenreRecommenderUser::GenreRecommenderUser(const GenreRecommenderUser &other) : User(other){}

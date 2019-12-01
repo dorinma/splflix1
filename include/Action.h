@@ -14,6 +14,10 @@ enum ActionStatus{
 class BaseAction{
 public:
 	BaseAction();
+	BaseAction(const BaseAction &other); //copy constructor
+	BaseAction& operator=(const BaseAction& other); //copy assignment operator
+    ~BaseAction(); //destructor
+    virtual BaseAction* dupAction() = 0;
 	ActionStatus getStatus() const;
 	virtual void act(Session& sess)=0;
 	virtual std::string toString() const=0;
@@ -31,6 +35,8 @@ public:
     CreateUser();
 	virtual void act(Session& sess);
 	virtual std::string toString() const;
+    virtual CreateUser* dupAction();
+    CreateUser(const CreateUser& other);
 };
 
 class ChangeActiveUser : public BaseAction {
@@ -38,6 +44,8 @@ public:
     ChangeActiveUser();
 	virtual void act(Session& sess);
 	virtual std::string toString() const;
+    virtual ChangeActiveUser* dupAction();
+    ChangeActiveUser(const ChangeActiveUser& other);
 };
 
 class DeleteUser : public BaseAction {
@@ -45,6 +53,8 @@ public:
     DeleteUser();
 	virtual void act(Session & sess);
 	virtual std::string toString() const;
+    virtual DeleteUser* dupAction();
+    DeleteUser(const DeleteUser& other);
 };
 
 
@@ -53,6 +63,8 @@ public:
     DuplicateUser();
 	virtual void act(Session & sess);
 	virtual std::string toString() const;
+    virtual DuplicateUser* dupAction();
+    DuplicateUser(const DuplicateUser& other);
 };
 
 class PrintContentList : public BaseAction {
@@ -60,6 +72,8 @@ public:
     PrintContentList();
 	virtual void act (Session& sess);
 	virtual std::string toString() const;
+    virtual PrintContentList* dupAction();
+    PrintContentList(const PrintContentList& other);
 };
 
 class PrintWatchHistory : public BaseAction {
@@ -67,6 +81,8 @@ public:
     PrintWatchHistory();
 	virtual void act (Session& sess);
 	virtual std::string toString() const;
+    virtual PrintWatchHistory* dupAction();
+    PrintWatchHistory(const PrintWatchHistory& other);
 };
 
 
@@ -75,6 +91,8 @@ public:
     Watch();
 	virtual void act(Session& sess);
 	virtual std::string toString() const;
+    virtual Watch* dupAction();
+    Watch(const Watch& other);
 };
 
 
@@ -83,6 +101,8 @@ public:
     PrintActionsLog();
 	virtual void act(Session& sess);
 	virtual std::string toString() const;
+    virtual PrintActionsLog* dupAction();
+    PrintActionsLog(const PrintActionsLog& other);
 };
 
 class Exit : public BaseAction {
@@ -90,5 +110,7 @@ public:
     Exit();
 	virtual void act(Session& sess);
 	virtual std::string toString() const;
+    virtual Exit* dupAction();
+    Exit(const Exit& other);
 };
 #endif

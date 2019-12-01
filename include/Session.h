@@ -12,20 +12,24 @@ class Watchable;
 class Session{
 public:
     Session(const std::string &configFilePath);
-    std::string nowPlaying;
+   // std::string nowPlaying;
     ~Session();
+    Session(const Session &other);
+    Session& operator=(const Session& other);
+    Session& operator=(const Session &&other);
     void start();
     void clean();
+    void copy(const Session &other);
     std::string getSessionInput();
     std::unordered_map<std::string, User*> getUserMap();
-    User* getUserByString(std::string name);
+    User* getUserByString(const std::string &name);
     User* getActiveUser();
     void addUserToMap(User *u);
-    Watchable* getSomethingToWatch(std::string id);
+    Watchable* getSomethingToWatch(const std::string &id);
     void addToHistory(Watchable *watched);
     void addActionToLog(BaseAction* ba);
     void setActiveUser(User* user);
-    void deleteUserFromMap(std::string name);
+    void deleteUserFromMap(const std::string &name);
     std::vector<Watchable*> getContent();
     std::vector<BaseAction*> getActionLog();
     void setTerminate(bool toContinue);
